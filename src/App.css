@@ -45,6 +45,8 @@
 }
 
 :root {
+  --theme-background-color: #002C5D;
+  --theme-foreground-color: #ffffff;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -125,3 +127,5 @@
 .active {
   color: red;
 }
+
+

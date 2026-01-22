@@ -10,6 +10,7 @@ export default function Todo() {
     },
   });
 
+  // data add
   const addTodoHandler = (data) => {
     console.log("🚀 ~ addTodoHandler ~ data:", data);
     reset({
