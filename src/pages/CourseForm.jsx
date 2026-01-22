@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
-export  function CourseForm() {
+export function CourseForm() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-6">
       {/* Course Form Card */}
