@@ -13,6 +13,9 @@ export default function Todo() {
     },
   });
 
+  // Options for radio and select
+
+
   const priorityOptions = ["low", "medium", "high"];
   const categoryOptions = ["work", "personal", "study"];
 
