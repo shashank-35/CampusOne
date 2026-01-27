@@ -1,7 +1,10 @@
 import { EventForm } from "@/pages/EventForm";
+import EventList from "@/pages/EventList";
 import InquiryForm from "@/pages/InquiryForm";
+import InquiryList from "@/pages/InquiryList";
 import LoginForm from "@/pages/LoginForm";
 import { ProductForm } from "@/pages/ProductForm";
+import StudentList from "@/pages/StudentList";
 import StudentForm from "@/pages/StudentForm";
 import Todo from "@/pages/Todo";
 import TodoList from "@/pages/TodoList";
@@ -18,9 +21,12 @@ export default function Router() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/student/create" element={<StudentForm />} />
-        <Route path="/student" element={<StudentForm />} />
-        <Route path="/inquiry" element={<InquiryForm />} />
-        <Route path="/event" element={<EventForm />} />
+        <Route path="/student" element={<StudentList />} />
+        <Route path="/inquiry/create" element={<InquiryForm />} />
+        <Route path="/inquiry" element={<InquiryList />} />
+        <Route path="/event/create" element={<EventForm />} />
+        <Route path="/event/create" element={<EventForm />} />
+        <Route path="/event" element={<EventList />} />
         <Route path="/user" element={<UserForm />} />
         <Route path="/product" element={<ProductForm />} />
         <Route path="/todo" element={<Todo />} />
