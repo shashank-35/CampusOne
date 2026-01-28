@@ -21,8 +21,10 @@ export default function Router() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/student/create" element={<StudentForm />} />
+        <Route path="/student/edit/:id" element={<StudentForm />} />
         <Route path="/student" element={<StudentList />} />
         <Route path="/inquiry/create" element={<InquiryForm />} />
+        <Route path="/inquiry/edit/:id" element={<InquiryForm />} />
         <Route path="/inquiry" element={<InquiryList />} />
         <Route path="/event/create" element={<EventForm />} />
         <Route path="/event/create" element={<EventForm />} />

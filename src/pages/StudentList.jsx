@@ -22,8 +22,9 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
+import {useNavigate} from "react-router";
 // Mock Data
+
 const MOCK_STUDENTS = [
   {
     id: 1,
@@ -130,6 +131,8 @@ export default function StudentList() {
     }
   };
 
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 space-y-6">
       {/* Header */}
@@ -204,7 +207,7 @@ export default function StudentList() {
                 </th>
                 <th className="p-4">STUDENT</th>
                 <th className="p-4">CLASS & STREAM</th>
-                <th className="p-4">FEES STATUS</th>
+                {/* <th className="p-4">FEES STATUS</th> */}
                 <th className="p-4">ROLL NO</th>
                 <th className="p-4">ATTENDANCE</th>
                 <th className="p-4">STATUS</th>
@@ -212,9 +215,7 @@ export default function StudentList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {MOCK_STUDENTS.filter((s) =>
-                s.name.toLowerCase().includes(searchTerm.toLowerCase())
-              ).map((student) => (
+              {MOCK_STUDENTS.map((student) => (
                 <tr
                   key={student.id}
                   className="group hover:bg-blue-50/50 transition-colors"
@@ -248,25 +249,25 @@ export default function StudentList() {
                       {student.stream}
                     </div>
                   </td>
-                   <td className="p-4">
+                   {/* <td className="p-4">
                      <span className={`font-medium ${
                         student.feesStatus === 'Paid' ? 'text-green-600' :
                         student.feesStatus === 'Overdue' ? 'text-red-600' : 'text-orange-600'
                      }`}>
                          {student.feesStatus}
                      </span>
-                  </td>
+                  </td> */}
                   <td className="p-4 text-gray-600">{student.rollNo}</td>
                   <td className="p-4 text-gray-600">{student.attendance}</td>
                   <td className="p-4">
                     <StatusBadge status={student.status} />
                   </td>
                   <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-2 transition-opacity">
                       <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-blue-600">
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-green-600">
+                      <Button variant="ghost" size="icon" onClick={()=>navigate(`/student/edit/${student.id}`)} className="h-8 w-8 hover:text-green-600">
                         <Edit className="h-4 w-4" />
                       </Button>
                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-red-600">
