@@ -25,7 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {useNavigate} from "react-router";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import DialogSymbol from "./DialogSymbol";
+
 // Mock Data
 
 const MOCK_STUDENTS = [
@@ -419,3 +419,16 @@ export default function StudentList() {
     </div>
   );
 }
+
+
+
+
+
+id: 1,
+    title: "Tech Innovation Summit",
+    type: "Seminar",
+    date: "2024-03-15",
+    time: "10:00 AM",
+    location: "Main Auditorium",
+    organizer: "Tech Club",
+    status: "Upcoming",

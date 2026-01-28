@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 
 // Mock Data
@@ -98,6 +99,8 @@ const StatusBadge = ({ status }) => {
 export default function EventList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEvents, setSelectedEvents] = useState([]);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const toggleSelectAll = () => {
     if (selectedEvents.length === MOCK_EVENTS.length) {
@@ -113,6 +116,11 @@ export default function EventList() {
     } else {
       setSelectedEvents([...selectedEvents, id]);
     }
+  };
+
+  const viewEvent = (event) => {
+    setSelectedEvent(event);
+    setViewDialogOpen(true);
   };
 
   return (
@@ -240,7 +248,7 @@ export default function EventList() {
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-blue-600">
+                      <Button variant="ghost" size="icon" onClick={() => viewEvent(event)} className="h-8 w-8 hover:text-blue-600">
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-green-600">
@@ -256,6 +264,102 @@ export default function EventList() {
             </tbody>
           </table>
         </div>
+
+
+        <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Event Details</DialogTitle>
+                    <DialogDescription>
+                      View complete information for the selected event
+                    </DialogDescription>
+                  </DialogHeader>
+                  {selectedEvent && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
+                          {selectedEvent.avatar}
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {selectedEvent.title}
+                          </h3>
+                          
+                        </div>
+                      </div>
+        
+                      <div className="grid grid-cols-2 gap-4 py-4 border-y border-gray-200">
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase">
+                            Type
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {selectedEvent.type}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase">
+                            Date
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {selectedEvent.date}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase">
+                            Time
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {selectedEvent.time}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase">
+                            Location
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {selectedEvent.location}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase">
+                            Organizer
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {selectedEvent.organizer}
+                          </p>
+                        </div>
+      
+                      </div>
+        
+                      <div>
+                        <p className="text-xs font-medium text-gray-500 uppercase mb-2">
+                          Status
+                        </p>
+                        <StatusBadge status={selectedEvent.status} />
+                      </div>
+        
+                      <div className="flex gap-2 pt-4">
+                        <Button
+                          onClick={() =>
+                            navigate(`/student/edit/${selectedEvent.id}`)
+                          }
+                          className="flex-1 bg-blue-600 hover:bg-blue-700"
+                        >
+                          <Edit className="h-4 w-4 mr-2" /> Edit
+                        </Button>
+                        <Button
+                          onClick={() => setViewDialogOpen(false)}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Close
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
          {/* Pagination Mock */}
         <div className="p-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between text-sm text-gray-500">
           <div>Showing 1-5 of 12 events</div>
