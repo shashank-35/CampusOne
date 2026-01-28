@@ -420,15 +420,3 @@ export default function StudentList() {
   );
 }
 
-
-
-
-
-id: 1,
-    title: "Tech Innovation Summit",
-    type: "Seminar",
-    date: "2024-03-15",
-    time: "10:00 AM",
-    location: "Main Auditorium",
-    organizer: "Tech Club",
-    status: "Upcoming",
