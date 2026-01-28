@@ -25,7 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {useNavigate} from "react-router";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import DialogSymbol from "./DialogSymbol";
+
 // Mock Data
 
 const MOCK_STUDENTS = [

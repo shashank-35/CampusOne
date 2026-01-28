@@ -14,6 +14,7 @@ import Sidebar from "@/Layout/Sidebar";
 import TopNav from "@/Layout/TopNav";
 import { Routes, Route } from "react-router";
 import Layout from "@/Layout/Layout";
+import UserList from "@/pages/UserList";
 
 export default function Router() {
   return (
@@ -29,7 +30,9 @@ export default function Router() {
         <Route path="/event/create" element={<EventForm />} />
         <Route path="/event/create" element={<EventForm />} />
         <Route path="/event" element={<EventList />} />
-        <Route path="/user" element={<UserForm />} />
+        <Route path="/user" element={<UserList/>} />
+        <Route path="/user/create" element={<UserForm />} />
+        <Route path="/user/edit/:id" element={<UserForm />} />
         <Route path="/product" element={<ProductForm />} />
         <Route path="/todo" element={<Todo />} />
         <Route path="/todoList" element={<TodoList />} />
