@@ -117,6 +117,8 @@ const StatusBadge = ({ status }) => {
 export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStudents, setSelectedStudents] = useState([]);
+
+  //Dialog Box Usestate
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
@@ -416,6 +418,8 @@ export default function StudentList() {
           )}
         </DialogContent>
       </Dialog>
+
+
     </div>
   );
 }

@@ -26,6 +26,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {useNavigate} from "react-router";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
 
 // Mock Data
 const MOCK_INQUIRIES = [
@@ -103,6 +107,10 @@ export default function InquiryList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedInquiries, setSelectedInquiries] = useState([]);
 
+  //Dialog Box Usestate
+    const [viewDialogOpenInquiry, setViewDialogOpenInquiry] = useState(false);
+    const [selectedStudentInquiry, setSelectedStudentInquiry] = useState(null);
+
   const toggleSelectAll = () => {
     if (selectedInquiries.length === MOCK_INQUIRIES.length) {
       setSelectedInquiries([]);
@@ -118,6 +126,13 @@ export default function InquiryList() {
       setSelectedInquiries([...selectedInquiries, id]);
     }
   };
+
+  const navigate = useNavigate();
+
+    const viewStudentInquiry = (inquiry) => {
+      setSelectedStudentInquiry(inquiry);
+      setViewDialogOpenInquiry(true);
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 space-y-6">
@@ -239,8 +254,8 @@ export default function InquiryList() {
                     <StatusBadge status={inquiry.status} />
                   </td>
                   <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                       <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-blue-600">
+                    <div className="flex items-center justify-end gap-2 ">
+                       <Button variant="ghost" size="icon" onClick={() => viewStudentInquiry(inquiry)} className="h-8 w-8 hover:text-blue-600">
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-green-600">
@@ -269,6 +284,119 @@ export default function InquiryList() {
           </div>
         </div>
       </div>
+
+          {/* View Student Dialog */}
+          <Dialog open={viewDialogOpenInquiry} onOpenChange={setViewDialogOpenInquiry}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Inquiry Details</DialogTitle>
+                <DialogDescription>
+                  View complete information for the Inquiry
+                </DialogDescription>
+              </DialogHeader>
+              {selectedStudentInquiry && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
+                      {selectedStudentInquiry.avatar}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {selectedStudentInquiry.name}
+                      </h3>
+                      <p className="text-sm text-gray-500">{selectedStudentInquiry.email}</p>
+                    </div>
+                  </div>
+    
+                  <div className="grid grid-cols-2 gap-4 py-4 border-y border-gray-200">
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase">
+                        Mobile
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {selectedStudentInquiry.mobile}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase">
+                        date
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {selectedStudentInquiry.date}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase">
+                        Stream
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {selectedStudentInquiry.stream}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase">
+                        Year
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {selectedStudentInquiry.year}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase">
+                        Fees Status
+                      </p>
+                      <p
+                        className={`text-sm font-semibold ${
+                          selectedStudentInquiry.Status === "Paid"
+                            ? "text-green-600"
+                            : selectedStudentInquiry.Status === "Overdue"
+                            ? "text-red-600"
+                            : "text-orange-600"
+                        }`}
+                      >
+                        {selectedStudentInquiry.Status}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase">
+                        Attendance
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {selectedStudentInquiry.attendance}
+                      </p>
+                    </div>
+                  </div>
+    
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase mb-2">
+                      Status
+                    </p>
+                    <StatusBadge status={selectedStudentInquiry.status} />
+                  </div>
+    
+                  <div className="flex gap-2 pt-4">
+                    <Button
+                      onClick={() =>
+                        navigate(`/student/edit/${selectedStudentInquiry.id}`)
+                      }
+                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Edit className="h-4 w-4 mr-2" /> Edit
+                    </Button>
+                    <Button
+                      onClick={() => setViewDialogOpenInquiry(false)}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+
+
     </div>
   );
 }
