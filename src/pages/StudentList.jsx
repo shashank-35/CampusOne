@@ -23,6 +23,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {useNavigate} from "react-router";
+
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import DialogSymbol from "./DialogSymbol";
 // Mock Data
 
 const MOCK_STUDENTS = [
@@ -114,6 +117,8 @@ const StatusBadge = ({ status }) => {
 export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   const toggleSelectAll = () => {
     if (selectedStudents.length === MOCK_STUDENTS.length) {
@@ -132,6 +137,13 @@ export default function StudentList() {
   };
 
   const navigate = useNavigate()
+
+
+
+  const viewStudent = (student) => {
+    setSelectedStudent(student);
+    setViewDialogOpen(true);
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 space-y-6">
@@ -207,7 +219,7 @@ export default function StudentList() {
                 </th>
                 <th className="p-4">STUDENT</th>
                 <th className="p-4">CLASS & STREAM</th>
-                {/* <th className="p-4">FEES STATUS</th> */}
+                <th className="p-4">FEES STATUS</th>
                 <th className="p-4">ROLL NO</th>
                 <th className="p-4">ATTENDANCE</th>
                 <th className="p-4">STATUS</th>
@@ -249,14 +261,14 @@ export default function StudentList() {
                       {student.stream}
                     </div>
                   </td>
-                   {/* <td className="p-4">
+                   <td className="p-4">
                      <span className={`font-medium ${
                         student.feesStatus === 'Paid' ? 'text-green-600' :
                         student.feesStatus === 'Overdue' ? 'text-red-600' : 'text-orange-600'
                      }`}>
                          {student.feesStatus}
                      </span>
-                  </td> */}
+                  </td>
                   <td className="p-4 text-gray-600">{student.rollNo}</td>
                   <td className="p-4 text-gray-600">{student.attendance}</td>
                   <td className="p-4">
@@ -264,7 +276,7 @@ export default function StudentList() {
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2 transition-opacity">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-blue-600">
+                      <Button variant="ghost" size="icon" onClick={() => viewStudent(student)} className="h-8 w-8 hover:text-blue-600">
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon" onClick={()=>navigate(`/student/edit/${student.id}`)} className="h-8 w-8 hover:text-green-600">
@@ -293,6 +305,117 @@ export default function StudentList() {
           </div>
         </div>
       </div>
+
+      {/* View Student Dialog */}
+      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Student Details</DialogTitle>
+            <DialogDescription>
+              View complete information for the selected student
+            </DialogDescription>
+          </DialogHeader>
+          {selectedStudent && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
+                  {selectedStudent.avatar}
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {selectedStudent.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">{selectedStudent.email}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 py-4 border-y border-gray-200">
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">
+                    Roll Number
+                  </p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {selectedStudent.rollNo}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">
+                    Class
+                  </p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {selectedStudent.class}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">
+                    Stream
+                  </p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {selectedStudent.stream}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">
+                    Year
+                  </p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {selectedStudent.year}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">
+                    Fees Status
+                  </p>
+                  <p
+                    className={`text-sm font-semibold ${
+                      selectedStudent.feesStatus === "Paid"
+                        ? "text-green-600"
+                        : selectedStudent.feesStatus === "Overdue"
+                        ? "text-red-600"
+                        : "text-orange-600"
+                    }`}
+                  >
+                    {selectedStudent.feesStatus}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">
+                    Attendance
+                  </p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {selectedStudent.attendance}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase mb-2">
+                  Status
+                </p>
+                <StatusBadge status={selectedStudent.status} />
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={() =>
+                    navigate(`/student/edit/${selectedStudent.id}`)
+                  }
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Edit className="h-4 w-4 mr-2" /> Edit
+                </Button>
+                <Button
+                  onClick={() => setViewDialogOpen(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
