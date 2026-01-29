@@ -120,10 +120,6 @@ export default function StudentList() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  //Dialog Box Usestate
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(null);
-
   const toggleSelectAll = () => {
     if (selectedStudents.length === MOCK_STUDENTS.length) {
       setSelectedStudents([]);
