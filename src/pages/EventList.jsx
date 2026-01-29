@@ -277,9 +277,7 @@ export default function EventList() {
                   {selectedEvent && (
                     <div className="space-y-4">
                       <div className="flex items-center gap-4">
-                        <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
-                          {selectedEvent.avatar}
-                        </div>
+                       
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">
                             {selectedEvent.title}
