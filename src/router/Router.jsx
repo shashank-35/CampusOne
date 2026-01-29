@@ -15,6 +15,7 @@ import TopNav from "@/Layout/TopNav";
 import { Routes, Route } from "react-router";
 import Layout from "@/Layout/Layout";
 import UserList from "@/pages/UserList";
+import { CourseForm } from "@/pages/CourseForm";
 
 export default function Router() {
   return (
@@ -27,6 +28,8 @@ export default function Router() {
         <Route path="/inquiry/create" element={<InquiryForm />} />
         <Route path="/inquiry/edit/:id" element={<InquiryForm />} />
         <Route path="/inquiry" element={<InquiryList />} />
+        <Route path="/inquiry/edit/:id" element={<CourseForm />} />
+        <Route path="/inquiry" element={<CourseForm />} />
         <Route path="/event/create" element={<EventForm />} />
         <Route path="/event/create" element={<EventForm />} />
         <Route path="/event" element={<EventList />} />

@@ -1,244 +1,375 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Plus, Trash2 } from "lucide-react";
 
 export default function StudentForm() {
-  const [educationList, setEducationList] = useState([
-    { qualification: "", stream: "", year: "" },
-  ]);
+  const [student, setStudent] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    dateOfBirth: "",
+    gender: "",
+    mobileNumber: "",
+    address: "",
+    landmark: "",
+    city: "",
+    state: "",
+    pincode: "",
+    background: "",
+    educationList: [{ qualification: "", stream: "", year: "" }],
+    parentName: "",
+    parentPhone: "",
+  });
+
+  const [studentList, setStudentList] = useState([]);
 
   const addEducation = () => {
-    setEducationList([
-      ...educationList,
-      { qualification: "", stream: "", year: "" },
-    ]);
+    setStudent({
+      ...student,
+      educationList: [
+        ...student.educationList,
+        { qualification: "", stream: "", year: "" },
+      ],
+    });
   };
 
   const removeEducation = (index) => {
-    setEducationList(educationList.filter((_, i) => i !== index));
+    setStudent({
+      ...student,
+      educationList: student.educationList.filter((_, i) => i !== index),
+    });
   };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setStudent({ ...student, [name]: value });
+  };
+
+  const handleEducationChange = (idx, field, value) => {
+    const updatedEducationList = [...student.educationList];
+    updatedEducationList[idx] = {
+      ...updatedEducationList[idx],
+      [field]: value,
+    };
+    setStudent({ ...student, educationList: updatedEducationList });
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    console.log("Submitted Student Data:", student);
+    setStudentList([...studentList, student]);
+    setStudent({
+      firstName: "",
+      lastName: "",
+      email: "",
+      dateOfBirth: "",
+      gender: "",
+      mobileNumber: "",
+      address: "",
+      landmark: "",
+      city: "",
+      state: "",
+      pincode: "",
+      background: "",
+      educationList: [{ qualification: "", stream: "", year: "" }],
+      parentName: "",
+      parentPhone: "",
+    });
+  };
+
+
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
-      <Card className="mx-auto max-w-4xl bg-white border border-gray-200 shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-semibold text-gray-800 text-center">
+      <div className="mx-auto max-w-4xl bg-white border border-gray-200 shadow-sm rounded-lg">
+        <div className="pb-4 border-b border-gray-200 px-6 py-4">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">
             Student Registration Form
-          </CardTitle>
-        </CardHeader>
+          </h2>
+        </div>
 
-        <CardContent className="space-y-10">
-          {/* BASIC INFO */}
-          <section className="space-y-5">
-            <h3 className="text-lg font-medium text-gray-700">
-              Basic Information
-            </h3>
+        <div className="space-y-10 p-6">
+          <form onSubmit={submitHandler}>
+            {/* BASIC INFO */}
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">
+                Basic Information
+              </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="group">
-                <Label className="group-hover:text-black">First Name</Label>
-                <Input
-                  placeholder="Enter first name"
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-                />
-              </div>
-
-              <div className="group">
-                <Label className="group-hover:text-black">Last Name</Label>
-                <Input
-                  placeholder="Enter last name"
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-                />
-              </div>
-
-              <div className="group">
-                <Label className="group-hover:text-black">Email</Label>
-                <Input
-                  type="email"
-                  placeholder="example@email.com"
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-                />
-              </div>
-
-              <div className="group">
-                <Label className="group-hover:text-black">Date of Birth</Label>
-                <Input
-                  type="date"
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Gender</Label>
-              <RadioGroup className="flex gap-6">
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="male" />
-                  <Label>Male</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={student.firstName}
+                    onChange={handleInputChange}
+                    placeholder="Enter first name"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
                 </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="female" />
-                  <Label>Female</Label>
+
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={student.lastName}
+                    onChange={handleInputChange}
+                    placeholder="Enter last name"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
                 </div>
-              </RadioGroup>
-            </div>
 
-            <div className="group">
-              <Label className="group-hover:text-black">Mobile Number</Label>
-              <Input
-                placeholder="10 digit mobile number"
-                className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-              />
-            </div>
-          </section>
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={student.email}
+                    onChange={handleInputChange}
+                    placeholder="example@email.com"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
 
-          {/* ADDRESS */}
-          <section className="space-y-5">
-            <h3 className="text-lg font-medium text-gray-700">Address</h3>
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Date of Birth
+                  </label>
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={student.dateOfBirth}
+                    onChange={handleInputChange}
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+              </div>
 
-            <div className="p-5 border border-gray-200 rounded-md bg-gray-50 hover:bg-white hover:shadow-sm space-y-4">
-              <Input
-                placeholder="House No, Street, Area"
-                className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-              />
-              <Input
-                placeholder="Landmark (optional)"
-                className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-              />
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">Gender</label>
+                <div className="flex gap-6">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="male"
+                      id="male"
+                      checked={student.gender === "male"}
+                      onChange={handleInputChange}
+                    />
+                    <label htmlFor="male" className="text-sm font-medium text-gray-700">
+                      Male
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="female"
+                      id="female"
+                      checked={student.gender === "female"}
+                      onChange={handleInputChange}
+                    />
+                    <label htmlFor="female" className="text-sm font-medium text-gray-700">
+                      Female
+                    </label>
+                  </div>
+                </div>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Input
-                  placeholder="City"
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-                />
-                <Input
-                  placeholder="State"
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-                />
-                <Input
-                  placeholder="Pincode"
-                  maxLength={6}
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
+              <div className="group">
+                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                  Mobile Number
+                </label>
+                <input
+                  type="tel"
+                  name="mobileNumber"
+                  value={student.mobileNumber}
+                  onChange={handleInputChange}
+                  placeholder="10 digit mobile number"
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
                 />
               </div>
-            </div>
-          </section>
+            </section>
 
-          {/* BACKGROUND */}
-          <section className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-700">
-              Technical Background
-            </h3>
+            {/* ADDRESS */}
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">Address</h3>
 
-            <Select>
-              <SelectTrigger className="hover:border-gray-400 focus:border-black">
-                <SelectValue placeholder="Select background" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="tech">Tech</SelectItem>
-                <SelectItem value="non-tech">Non Tech</SelectItem>
-              </SelectContent>
-            </Select>
-          </section>
+              <div className="p-5 border border-gray-200 rounded-md bg-gray-50 hover:bg-white hover:shadow-sm space-y-4">
+                <input
+                  type="text"
+                  name="address"
+                  value={student.address}
+                  onChange={handleInputChange}
+                  placeholder="House No, Street, Area"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                />
+                <input
+                  type="text"
+                  name="landmark"
+                  value={student.landmark}
+                  onChange={handleInputChange}
+                  placeholder="Landmark (optional)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                />
 
-          {/* EDUCATION */}
-          <section className="space-y-5">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium text-gray-700">Education</h3>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={addEducation}
-                className="hover:bg-gray-100"
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <input
+                    type="text"
+                    name="city"
+                    value={student.city}
+                    onChange={handleInputChange}
+                    placeholder="City"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                  <input
+                    type="text"
+                    name="state"
+                    value={student.state}
+                    onChange={handleInputChange}
+                    placeholder="State"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                  <input
+                    type="text"
+                    name="pincode"
+                    value={student.pincode}
+                    onChange={handleInputChange}
+                    placeholder="Pincode"
+                    maxLength={6}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* BACKGROUND */}
+            <section className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">
+                Technical Background
+              </h3>
+
+              <select
+                name="background"
+                value={student.background}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
               >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
+                <option value="">Select background</option>
+                <option value="tech">Tech</option>
+                <option value="non-tech">Non Tech</option>
+              </select>
+            </section>
 
-            {educationList.map((_, index) => (
-              <div
-                key={index}
-                className="border border-gray-200 rounded-md p-4 bg-gray-50 hover:bg-white hover:shadow-sm space-y-3"
-              >
-                <div className="flex justify-between items-center">
-                  <p className="text-sm font-medium">Education {index + 1}</p>
+            {/* EDUCATION */}
+            <section className="space-y-5">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-700">Education</h3>
+                <button
+                  type="button"
+                  onClick={addEducation}
+                  className="inline-flex items-center justify-center h-10 w-10 rounded-md border border-gray-300 bg-white hover:bg-gray-100 text-gray-700"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
 
-                  {educationList.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeEducation(index)}
-                      className="hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  )}
+              {student.educationList.map((_, idx) => (
+                <div
+                  key={idx}
+                  className="border border-gray-200 rounded-md p-4 bg-gray-50 hover:bg-white hover:shadow-sm space-y-3"
+                >
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm font-medium">Education {idx + 1}</p>
+
+                    {student.educationList.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeEducation(idx)}
+                        className="inline-flex items-center justify-center h-10 w-10 rounded-md bg-transparent hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </button>
+                    )}
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="Qualification"
+                    value={student.educationList[idx].qualification}
+                    onChange={(e) =>
+                      handleEducationChange(idx, "qualification", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Specialization / Stream"
+                    value={student.educationList[idx].stream}
+                    onChange={(e) =>
+                      handleEducationChange(idx, "stream", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Passing Year"
+                    value={student.educationList[idx].year}
+                    onChange={(e) =>
+                      handleEducationChange(idx, "year", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
                 </div>
+              ))}
+            </section>
 
-                <Input
-                  placeholder="Qualification"
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
+            {/* PARENT */}
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">
+                Parent Details
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input
+                  type="text"
+                  name="parentName"
+                  value={student.parentName}
+                  onChange={handleInputChange}
+                  placeholder="Parent Name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
                 />
-                <Input
-                  placeholder="Specialization / Stream"
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-                />
-                <Input
-                  placeholder="Passing Year"
-                  className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
+                <input
+                  type="tel"
+                  name="parentPhone"
+                  value={student.parentPhone}
+                  onChange={handleInputChange}
+                  placeholder="Parent Phone Number"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
                 />
               </div>
-            ))}
-          </section>
+            </section>
 
-          {/* PARENT */}
-          <section className="space-y-5">
-            <h3 className="text-lg font-medium text-gray-700">
-              Parent Details
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input
-                placeholder="Parent Name"
-                className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-              />
-              <Input
-                placeholder="Parent Phone Number"
-                className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-              />
+            {/* SUBMIT */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                className="w-full h-11 text-base border border-gray-300 rounded-md bg-white text-gray-900 font-medium hover:bg-gray-900 hover:text-white hover:border-gray-900 transition"
+              >
+                Submit Form
+              </button>
             </div>
-          </section>
-
-          {/* SUBMIT */}
-          <div className="pt-4">
-           <Button
-  type="submit"
-  variant="outline"
-  className="w-full h-11 text-base
-             border-gray-300
-             hover:bg-gray-900
-             hover:text-white
-             hover:border-gray-900"
->
-  Submit Form
-</Button>
-
-          </div>
-        </CardContent>
-      </Card>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
