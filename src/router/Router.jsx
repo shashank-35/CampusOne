@@ -16,6 +16,7 @@ import { Routes, Route } from "react-router";
 import Layout from "@/Layout/Layout";
 import UserList from "@/pages/UserList";
 import { CourseForm } from "@/pages/CourseForm";
+import { NotFound } from "@/pages/404NotFound";
 
 export default function Router() {
   return (
@@ -39,6 +40,7 @@ export default function Router() {
         <Route path="/product" element={<ProductForm />} />
         <Route path="/todo" element={<Todo />} />
         <Route path="/todoList" element={<TodoList />} />
+        <Route path="*"  element={<NotFound/>}/>
       </Routes>
     </Layout>
   );
