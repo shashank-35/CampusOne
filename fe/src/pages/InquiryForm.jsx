@@ -128,6 +128,18 @@ export default function InquiryForm() {
                   />
                   <label htmlFor="female" className="text-sm font-medium text-gray-700">Female</label>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <input 
+                    type="radio" 
+                    id="other" 
+                    name="gender" 
+                    value="other" 
+                    checked={inquiry.gender === "other"}
+                    onChange={(e) => setInquiry({ ...inquiry, gender: e.target.value })}
+                    className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                  />
+                  <label htmlFor="male" className="text-sm font-medium text-gray-700">other</label>
+                </div>
               </div>
             </div>
 

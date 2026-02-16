@@ -16,6 +16,7 @@ import { Routes, Route } from "react-router";
 import Layout from "@/Layout/Layout";
 import UserList from "@/pages/UserList";
 import { CourseForm } from "@/pages/CourseForm";
+import { NotFound } from "@/pages/404NotFound";
 
 import NotFound from "@/pages/NotFound";
 import ProductList from "@/pages/ProductList";
