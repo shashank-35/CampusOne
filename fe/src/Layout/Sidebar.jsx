@@ -13,6 +13,7 @@ export default function Sidebar() {
         <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/event">Event</Link>
         <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/user">User</Link>
         <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/product">Product</Link>
+
       </nav>
     </aside>
   );

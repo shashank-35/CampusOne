@@ -17,6 +17,9 @@ import Layout from "@/Layout/Layout";
 import UserList from "@/pages/UserList";
 import { CourseForm } from "@/pages/CourseForm";
 
+import NotFound from "@/pages/NotFound";
+import ProductList from "@/pages/ProductList";
+
 export default function Router() {
   return (
     <Layout>
@@ -36,9 +39,12 @@ export default function Router() {
         <Route path="/user" element={<UserList/>} />
         <Route path="/user/create" element={<UserForm />} />
         <Route path="/user/edit/:id" element={<UserForm />} />
-        <Route path="/product" element={<ProductForm />} />
+        <Route path="/product/create" element={<ProductForm />} />
+        <Route path="/product" element={<ProductList />} />
+
         <Route path="/todo" element={<Todo />} />
         <Route path="/todoList" element={<TodoList />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
   );
