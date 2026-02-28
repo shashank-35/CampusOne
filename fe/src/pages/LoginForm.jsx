@@ -1,27 +1,48 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CardContent } from "../components/ui/card";
+import { useNavigate } from "react-router";
+import { useState } from "react";
+import axios from "axios";
 
-import { Controller, useForm } from "react-hook-form";
+const API = "http://localhost:5000/api";
 
 export default function LoginForm() {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-  console.log("🚀 ~ LoginForm ~ errors:", errors);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const submitHandler = (data) => {
-    console.log("----->", data);
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      // const res = await axios.post(`${API}/auth/login`, {
+      //   email: email,
+      //   password: password,
+      // });
+      const res = await axios.post(`${API}/auth/login`, {
+        email,
+        password,
+      });
+      console.log("🚀 ~ submitHandler ~ res:", res.data);
+      const { user, token } = res.data.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(res));
+      if (user.role === "student") {
+        navigate("/student-home");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      console.log("🚀 ~ submitHandler ~ err:", err.response.data);
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,89 +55,51 @@ export default function LoginForm() {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <form onSubmit={handleSubmit(submitHandler)}>
-            {/* Email */}
+          {error && (
+            <div className="p-3 bg-red-50 text-red-600 rounded-md text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={submitHandler}>
             <div className="group">
               <Label className="group-hover:text-black">Email Address</Label>
-              <Controller
-                name="email"
-                control={control}
-                rules={{
-                  required: { value: true, message: "Please enter email" },
-                }}
-                render={({ field }) => {
-                  return (
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder="example@email.com"
-                      className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-                    />
-                  );
-                }}
+              <Input
+                type="email"
+                placeholder="example@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
               />
-              {errors.email ? (
-                <p className="text-red-600"> {errors.email.message}</p>
-              ) : null}
             </div>
 
-            {/* Password */}
             <div className="group">
               <Label className="group-hover:text-black">Password</Label>
-              <Controller
-                name="password"
-                control={control}
-                rules={{
-                  required: true,
-                }}
-                render={({ field }) => {
-                  return (
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder="Enter your password"
-                      className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-                    />
-                  );
-                }}
+              <Input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
               />
             </div>
 
-            {/* Remember */}
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
-                <Checkbox id="remember" />
-                <Label htmlFor="remember" className="cursor-pointer">
-                  Remember me
-                </Label>
-              </div>
-
-              <Button type="button" className="text-gray-600 hover:text-black">
-                Forgot password?
-              </Button>
-            </div>
-
-            {/* Submit */}
             <Button
               type="submit"
+              disabled={loading}
               variant="outline"
-              className="w-full h-11 text-base
+              className="w-full h-11 text-base mt-4
                        border-gray-300
                        hover:bg-gray-900
                        hover:text-white
-                       hover:border-gray-900"
+                       hover:border-gray-900
+                       disabled:opacity-50"
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
-
-          {/* Footer */}
-          <p className="text-sm text-center text-gray-600">
-            Don’t have an account?
-            <span className="text-black cursor-pointer hover:underline">
-              Register
-            </span>
-          </p>
         </CardContent>
       </Card>
     </div>

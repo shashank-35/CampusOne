@@ -10,21 +10,21 @@ import Todo from "@/pages/Todo";
 import TodoList from "@/pages/TodoList";
 import { UserForm } from "@/pages/UserForm";
 import Home from "@/pages/Home";
-import Sidebar from "@/Layout/Sidebar";
-import TopNav from "@/Layout/TopNav";
-import { Routes, Route } from "react-router";
 import Layout from "@/Layout/Layout";
 import UserList from "@/pages/UserList";
 import { CourseForm } from "@/pages/CourseForm";
+import CourseList from "@/pages/CourseList";
 import { NotFound } from "@/pages/404NotFound";
-
-import NotFound from "@/pages/NotFound";
 import ProductList from "@/pages/ProductList";
+import StudentHome from "@/pages/StudentHome";
+import { Routes, Route } from "react-router";
 
 export default function Router() {
   return (
-    <Layout>
-      <Routes>
+    <Routes>
+      <Route path="/login" element={<LoginForm />} />
+      <Route path="/student-home" element={<StudentHome />} />
+      <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/student/create" element={<StudentForm />} />
         <Route path="/student/edit/:id" element={<StudentForm />} />
@@ -32,21 +32,22 @@ export default function Router() {
         <Route path="/inquiry/create" element={<InquiryForm />} />
         <Route path="/inquiry/edit/:id" element={<InquiryForm />} />
         <Route path="/inquiry" element={<InquiryList />} />
-        <Route path="/inquiry/edit/:id" element={<CourseForm />} />
-        <Route path="/course" element={<CourseForm />} />
+        <Route path="/course/create" element={<CourseForm />} />
+        <Route path="/course/edit/:id" element={<CourseForm />} />
+        <Route path="/course" element={<CourseList />} />
         <Route path="/event/create" element={<EventForm />} />
-        <Route path="/event/create" element={<EventForm />} />
+        <Route path="/event/edit/:id" element={<EventForm />} />
         <Route path="/event" element={<EventList />} />
-        <Route path="/user" element={<UserList/>} />
+        <Route path="/user" element={<UserList />} />
         <Route path="/user/create" element={<UserForm />} />
         <Route path="/user/edit/:id" element={<UserForm />} />
         <Route path="/product/create" element={<ProductForm />} />
+        <Route path="/product/edit/:id" element={<ProductForm />} />
         <Route path="/product" element={<ProductList />} />
-
         <Route path="/todo" element={<Todo />} />
         <Route path="/todoList" element={<TodoList />} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Layout>
+      </Route>
+    </Routes>
   );
 }

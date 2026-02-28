@@ -1,118 +1,91 @@
+import React, { useState } from "react";
+import { Plus, Trash2, Check } from "lucide-react";
+import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import React from "react";
-import { Controller, useForm } from "react-hook-form";
 
-export default function Todo() {
-  const { control, handleSubmit, reset } = useForm({
-    defaultValues: {
-      todo: "",
-      important: false,
-      priority: "",
-      category: "",
-    },
-  });
+const PriorityBadge = ({ priority }) => {
+  const styles = {
+    low: "bg-green-100 text-green-700",
+    medium: "bg-yellow-100 text-yellow-700",
+    high: "bg-red-100 text-red-700",
+  };
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${styles[priority] || "bg-gray-100 text-gray-700"}`}>
+      {priority}
+    </span>
+  );
+};
 
-  // Options for radio and select
+export default function TodoList() {
+  const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  // TODO: Add fetchTodos function with API call
+  // TODO: Add useEffect to fetch on mount
 
-  const priorityOptions = ["low", "medium", "high"];
-  const categoryOptions = ["work", "personal", "study"];
+  const toggleComplete = async (todo) => {
+    // TODO: Add API update call
+  };
 
-  const addTodoHandler = (data) => {
-    console.log("🚀 Final Todo Data:", data);
-    reset();
+  const handleDelete = async (id) => {
+    // TODO: Add API delete call
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <form onSubmit={handleSubmit(addTodoHandler)} className="space-y-5 w-80 border p-5 rounded-2xl">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">My Todos</h1>
+          <Link to="/todo">
+            <Button className="bg-black hover:bg-zinc-800 text-white">
+              <Plus className="mr-2 h-4 w-4" /> Add Todo
+            </Button>
+          </Link>
+        </div>
 
-        {/* Todo Input */}
-        <Controller
-          name="todo"
-          control={control}
-          render={({ field }) => (
-            <Input
-              {...field}
-              type="text"
-              placeholder="enter your task"
-              className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-            />
-          )}
-        />
-
-        {/* Checkbox */}
-        <Controller
-          name="important"
-          control={control}
-          render={({ field }) => (
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={field.value}
-                onChange={(e) => field.onChange(e.target.checked)}
-              />
-              Mark as important
-            </label>
-          )}
-        />
-
-        {/* Radio */}
-        <Controller
-          name="priority"
-          control={control}
-          render={({ field }) => (
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Priority</p>
-              {priorityOptions.map((item) => (
-                <label key={item} className="flex items-center gap-2 text-sm">
-                  <input
-                    type="radio"
-                    value={item}
-                    checked={field.value === item}
-                    onChange={(e) => field.onChange(e.target.value)}
-                  />
-                  {item}
-                </label>
-              ))}
-            </div>
-          )}
-        />
-
-        {/* Select */}
-        <Controller
-          name="category"
-          control={control}
-          render={({ field }) => (
-            <select
-              {...field}
-              className="w-full h-10 border border-gray-300 rounded-md px-2
-                         hover:border-gray-400 focus:border-black focus:outline-none"
-            >
-              <option value="">Select category</option>
-              {categoryOptions.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          )}
-        />
-
-        {/* Submit */}
-        <Button
-          type="submit"
-          variant="outline"
-          className="w-full h-11 text-base
-                     border-gray-300
-                     hover:bg-gray-900
-                     hover:text-white
-                     hover:border-gray-900"
-        >
-          Add Task
-        </Button>
-      </form>
+        {loading ? (
+          <div className="text-center text-gray-500 py-8">Loading...</div>
+        ) : todos.length === 0 ? (
+          <div className="text-center text-gray-500 py-8">No todos yet. Create one!</div>
+        ) : (
+          <div className="space-y-3">
+            {todos.map((todo) => (
+              <div
+                key={todo._id}
+                className={`bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between shadow-sm ${
+                  todo.status === "completed" ? "opacity-60" : ""
+                }`}
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  <button
+                    onClick={() => toggleComplete(todo)}
+                    className={`h-6 w-6 rounded-full border-2 flex items-center justify-center transition ${
+                      todo.status === "completed"
+                        ? "bg-green-500 border-green-500 text-white"
+                        : "border-gray-300 hover:border-green-400"
+                    }`}
+                  >
+                    {todo.status === "completed" && <Check className="h-3 w-3" />}
+                  </button>
+                  <div>
+                    <p className={`font-medium ${todo.status === "completed" ? "line-through text-gray-400" : "text-gray-900"}`}>
+                      {todo.todo}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <PriorityBadge priority={todo.priority} />
+                      <span className="text-xs text-gray-500 capitalize">{todo.category}</span>
+                      {todo.important && <span className="text-xs text-orange-500 font-medium">Important</span>}
+                    </div>
+                  </div>
+                </div>
+                <button onClick={() => handleDelete(todo._id)} className="p-2 hover:bg-red-50 rounded-lg text-red-500 transition">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

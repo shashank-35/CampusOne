@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 const config = require('./config/config');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -16,6 +18,7 @@ const eventRoutes = require('./routes/eventRoutes');
 const inquiryRoutes = require('./routes/inquiryRoutes');
 const productRoutes = require('./routes/productRoutes');
 const todoRoutes = require('./routes/todoRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 
@@ -43,6 +46,12 @@ if (config.nodeEnv === 'development') {
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Swagger API docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  explorer: true,
+  customSiteTitle: 'CampusOne API Docs',
+}));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -52,6 +61,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/todos', todoRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

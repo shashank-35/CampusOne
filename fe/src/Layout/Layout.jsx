@@ -1,9 +1,8 @@
 import React from "react";
+import { Outlet } from "react-router";
 import Sidebar from "./Sidebar";
 import TopNav from "./TopNav";
 
-
-// props destructuring 
 export default function Layout({ children }) {
   return (
     <div className="flex flex-1">
@@ -14,7 +13,9 @@ export default function Layout({ children }) {
         <div className="max-h-[90px] p-2.5">
           <TopNav />
         </div>
-        <div className="h-[calc(100vh-90px)] bg-gray-500 overflow-y-auto">{children}</div>
+        <div className="h-[calc(100vh-90px)] bg-gray-500 overflow-y-auto">
+          {children || <Outlet />}
+        </div>
       </div>
     </div>
   );
