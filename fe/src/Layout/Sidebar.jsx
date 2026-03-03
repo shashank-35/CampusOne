@@ -21,7 +21,6 @@ export default function Sidebar() {
         <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/event">Event</Link>
         <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/user">User</Link>
         <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/product">Product</Link>
-        <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/todoList">Todos</Link>
       </nav>
       {user && (
         <div className="mt-auto pt-4 border-t border-gray-600">

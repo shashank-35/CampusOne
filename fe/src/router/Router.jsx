@@ -6,8 +6,7 @@ import LoginForm from "@/pages/LoginForm";
 import { ProductForm } from "@/pages/ProductForm";
 import StudentList from "@/pages/StudentList";
 import StudentForm from "@/pages/StudentForm";
-import Todo from "@/pages/Todo";
-import TodoList from "@/pages/TodoList";
+
 import { UserForm } from "@/pages/UserForm";
 import Home from "@/pages/Home";
 import Layout from "@/Layout/Layout";
@@ -44,8 +43,6 @@ export default function Router() {
         <Route path="/product/create" element={<ProductForm />} />
         <Route path="/product/edit/:id" element={<ProductForm />} />
         <Route path="/product" element={<ProductList />} />
-        <Route path="/todo" element={<Todo />} />
-        <Route path="/todoList" element={<TodoList />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
