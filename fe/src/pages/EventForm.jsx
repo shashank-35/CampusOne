@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router";
+import axios from "axios";
+
+const API = "http://localhost:5000/api";
 
 export function EventForm() {
   const { id } = useParams();
@@ -22,11 +25,26 @@ export function EventForm() {
   const [error, setError] = useState("");
 
   // TODO: Add useEffect to fetch event by id when isEdit is true
+
+
   // TODO: Add API call in handleSubmit
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form data:", event);
+    
+
+    const res = await axios.post(
+      `${API}/events`,
+      event,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    console.log("API response:", res.data);
     navigate("/event");
   };
 

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router";
-
+import  axios from "axios";
 export function UserForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
 
+
+  const API = "http://localhost:5000/api";
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -35,6 +37,18 @@ export function UserForm() {
   const userHandler = async (e) => {
     e.preventDefault();
     console.log("Form data:", user);
+
+const res = await axios.post(
+  `${API}/users`,
+  user,
+  {
+    hearders:{
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+
+    },
+  },
+);
+    console.log("API response:", res.data);
     navigate("/user");
   };
 

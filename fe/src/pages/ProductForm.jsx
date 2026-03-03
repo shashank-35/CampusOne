@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
+import  axios from "axios";
 
+const API = "http://localhost:5000/api";
 export function ProductForm() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -27,6 +29,18 @@ export function ProductForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form data:", product);
+
+    const res = await axios.post(
+      `${API}/products`,
+        product,
+        {
+          headers :
+          {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+    console.log("API response:", res.data);
     navigate("/product");
   };
 
