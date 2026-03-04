@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search, Plus, Download, Phone, Mail, Trash2, Edit, Eye,
 } from "lucide-react";
@@ -9,7 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import axios from "axios";
 
+const API = "http://localhost:5000/api";
 const StatusBadge = ({ status }) => {
   const styles = {
     new: "bg-blue-100 text-blue-700",
@@ -33,9 +35,22 @@ export default function InquiryList() {
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const navigate = useNavigate();
 
-  // TODO: Add fetchInquiries function with API call
+  // TODO: Add fetchInquiries function with API call\
+  const fetchInquiries = () => {
+    setLoading(true);
+    const header = {
+      Authorization: `Bearer ${localStorage.getItem("token")}`};
+      axios.get(`${API}/inquiries`, { params: { search: searchTerm }, headers: header })
+      .then((res) => {
+        setInquiries(res.data.data || []);
+      }).catch(() => {
+        setInquiries([])
+      }).finally(() => {
+        setLoading(false);
+      });
+  };
   // TODO: Add useEffect to fetch on mount
-
+  useEffect(() => { fetchInquiries(); }, []);
   const toggleSelectAll = () => {
     if (selectedInquiries.length === inquiries.length) {
       setSelectedInquiries([]);
@@ -53,6 +68,13 @@ export default function InquiryList() {
   const handleDelete = async (id) => {
     if (!confirm("Delete this inquiry?")) return;
     // TODO: Add API delete call
+
+    try{
+      await axios.delete(`${API}/inquiries/${id}`, {
+        headers:{
+          Authorization: `Bearer ${localStorage.getItem("token")}`} });
+          fetchInquiries();
+    }catch{}
   };
 
   const filtered = inquiries.filter((i) =>
