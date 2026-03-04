@@ -232,7 +232,7 @@ export default function StudentForm() {
 
             {/* SUBMIT */}
             <div className="pt-4">
-              <button type="submit" disabled={loading} className="w-full h-11 text-base border border-gray-300 rounded-md bg-white text-gray-900 font-medium hover:bg-gray-900 hover:text-white hover:border-gray-900 transition disabled:opacity-50">
+              <button type="submit" disabled={loading} className="w-full h-11 text-base border border-gray-300 rounded-md   text-gray-900 font-medium hover:bg-gray-900 hover:text-white hover:border-gray-900 transition disabled:opacity-50">
                 {loading ? "Saving..." : isEdit ? "Update Student" : "Submit Form"}
               </button>
             </div>
