@@ -4,6 +4,7 @@ import { Users, GraduationCap, Calendar, MessageSquare, Package, BookOpen } from
 export default function Home() {
   // TODO: Add API call to fetch dashboard stats
 
+
   const cards = [
     { label: "Total Students", value: "-", icon: GraduationCap, color: "bg-blue-500", link: "/student" },
     { label: "Total Courses", value: "-", icon: BookOpen, color: "bg-green-500", link: "/course" },

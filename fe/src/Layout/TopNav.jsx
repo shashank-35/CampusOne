@@ -12,8 +12,6 @@ export default function TopNav() {
         />
       </div>
       <div className="flex items-center space-x-4">
-        {/* Notification icon */}
-        <Bell className="h-6 w-6 " />
         {/* User/profile icon */}
         <User className="h-6 w-6 " />
       </div>

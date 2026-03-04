@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   Search, Plus, Download, Trash2, Edit, Eye, X,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router";
+import axios from "axios";
 
+const API = "http://localhost:5000/api";
 const StatusBadge = ({ status }) => {
   const styles = {
     "in-stock": "bg-green-100 text-green-700",
@@ -32,7 +34,20 @@ export default function ProductList() {
   const navigate = useNavigate();
 
   // TODO: Add fetchProducts function with API call
+const fetchProducts = async () => {
+    setLoading(true);
+   const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+   axios.get(`${API}/products`, { params: { search: searchTerm }, headers })
+     .then((res) => setProducts(res.data.data || []))
+     .catch(() => setProducts([]))
+     .finally(() => setLoading(false));
+  };
+
+
   // TODO: Add useEffect to fetch on mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const filteredProducts = products.filter((product) =>
     product.productName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -55,6 +70,10 @@ export default function ProductList() {
   const handleDelete = async (id) => {
     if (!confirm("Delete this product?")) return;
     // TODO: Add API delete call
+    try {
+      await axios.delete(`${API}/products/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+      fetchProducts();
+    } catch {}
   };
 
   return (

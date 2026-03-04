@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 
@@ -19,6 +19,27 @@ export function ProductForm() {
   const [error, setError] = useState("");
 
   // TODO: Add useEffect to fetch product by id when isEdit is true
+  useEffect(() => {
+    if (isEdit) {
+      setLoading(true);
+      axios.get(`${API}/products/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+        .then((res) => {
+          const data = res.data.data;
+          setProduct({
+            productName: data.productName || "",
+            receiveCount: data.receiveCount || "",
+            missing: data.missing || "",
+            availableCount: data.availableCount || "",
+            description: data.description || "",
+          });
+        })
+        .catch(() => setError("Failed to load product data"))
+        .finally(() => setLoading(false));
+    }
+  }, [id, isEdit]);
+
   // TODO: Add API call in handleSubmit
 
   const handleChange = (e) => {
@@ -28,15 +49,25 @@ export function ProductForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
     console.log("Form data:", product);
-
-    const res = await axios.post(`${API}/products`, product, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    console.log("API response:", res.data);
-    navigate("/product");
+    try{
+      const header = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+      if (isEdit) {
+        await axios.put(`${API}/products/${id}`, product, { headers: header });
+        
+      }else {
+        await axios.post(`${API}/products`, product, { headers: header });
+      }
+      navigate("/product");
+    }
+    catch (err) {
+      setError(err.response?.data?.message || "Failed to save product");
+    }
+    finally {
+      setLoading(false);
+    }
   };
 
   return (
