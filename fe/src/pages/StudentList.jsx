@@ -46,7 +46,8 @@ export default function StudentList() {
       .catch(() => setStudents([]))
       .finally(() => setLoading(false));
   };
-
+//  useEffect(() => { fetchStudents();
+//  } );
   useEffect(() => { fetchStudents(); }, []);
 
   const toggleSelectAll = () => {

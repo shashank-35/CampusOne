@@ -1,17 +1,49 @@
 import { Link } from "react-router";
 import { Users, GraduationCap, Calendar, MessageSquare, Package, BookOpen } from "lucide-react";
+import  axios from "axios";
+import { useEffect, useState } from "react";
 
+const API = "http://localhost:5000/api";
 export default function Home() {
-  // TODO: Add API call to fetch dashboard stats
+  const[stats , setStats] = useState({
+    totalStudents: 0,
+    totalCourses: 0,
+    upcomingEvents: 0,
+    newInquiries: 0,
+    totalProducts: 0,
+    totalUsers: 0,
+  });
 
+  // TODO: Add API call to fetch dashboard stats
+useEffect(() => {
+  fetchDashboardStats();
+}, []);
+
+const fetchDashboardStats = async () => {
+  try {
+    const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+    const res = await axios.get(`${API}/dashboard/stats`, { headers });
+    setStats(res.data.data || {
+      totalStudents: 0,
+      totalCourses: 0,
+      upcomingEvents: 0,
+      newInquiries: 0,
+      totalProducts: 0,
+      totalUsers: 0,
+    });
+
+  } catch (error) {
+    console.error("Failed to fetch dashboard stats", error);
+  }
+};
 
   const cards = [
-    { label: "Total Students", value: "-", icon: GraduationCap, color: "bg-blue-500", link: "/student" },
-    { label: "Total Courses", value: "-", icon: BookOpen, color: "bg-green-500", link: "/course" },
-    { label: "Upcoming Events", value: "-", icon: Calendar, color: "bg-purple-500", link: "/event" },
-    { label: "New Inquiries", value: "-", icon: MessageSquare, color: "bg-orange-500", link: "/inquiry" },
-    { label: "Total Products", value: "-", icon: Package, color: "bg-red-500", link: "/product" },
-    { label: "Total Users", value: "-", icon: Users, color: "bg-indigo-500", link: "/user" },
+    { label: "Total Students", value: `${stats.totalStudents}`, icon: GraduationCap, color: "bg-blue-500", link: "/student" },
+    { label: "Total Courses", value: `${stats.totalCourses}`, icon: BookOpen, color: "bg-green-500", link: "/course" },
+    { label: "Upcoming Events", value: `${stats.upcomingEvents}`, icon: Calendar, color: "bg-purple-500", link: "/event" },
+    { label: "New Inquiries", value: `${stats.newInquiries}`, icon: MessageSquare, color: "bg-orange-500", link: "/inquiry" },
+    { label: "Total Products", value: `${stats.totalProducts}`, icon: Package, color: "bg-red-500", link: "/product" },
+    { label: "Total Users", value: `${stats.totalUsers}`, icon: Users, color: "bg-indigo-500", link: "/user" },
   ];
 
   return (
