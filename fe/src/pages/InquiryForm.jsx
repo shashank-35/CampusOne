@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import  axios from "axios";
 
@@ -32,23 +32,54 @@ export default function InquiryForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // TODO: Add useEffect to fetch inquiry by id when isEdit is true
-  // TODO: Add API call in handleSubmit
+  useEffect(() => {
+    if (isEdit) {
+      setLoading(true);
+      axios.get(`${API}/inquiries/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+        .then((res) => {
+          const s = res.data.data;
+          setInquiry({
+            sourceOfInquiry: s.sourceOfInquiry || "",
+            firstName: s.firstName || "",
+            lastName: s.lastName || "",
+            email: s.email || "",
+            dateOfBirth: s.dateOfBirth ? s.dateOfBirth.split("T")[0] : "",
+            gender: s.gender || "male",
+            mobile: s.mobile || "",
+            addressLine1: s.addressLine1 || "",
+            addressLine2: s.addressLine2 || "",
+            city: s.city || "",
+            state: s.state || "",
+            pincode: s.pincode || "",
+            techBackground: s.techBackground || "",
+            qualification: s.qualification || "",
+            specialization: s.specialization || "",
+            passingYear: s.passingYear || "",
+            interestedArea: s.interestedArea || "",
+          });
+        })
+        .catch((err) => setError(err.response?.data?.message || "Failed to load inquiry"))
+        .finally(() => setLoading(false));
+    }
+  }, [id, isEdit]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data:", inquiry);
-    const res = await axios.post(
-      `${API}/inquiries`,
-      inquiry,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      },
-    );
-    console.log("🚀 ~ handleSubmit ~ res:", res.data)
-    navigate("/inquiry");
+    setLoading(true);
+    setError("");
+    try {
+      const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+      if (isEdit) {
+        await axios.put(`${API}/inquiries/${id}`, inquiry, { headers });
+      } else {
+        await axios.post(`${API}/inquiries`, inquiry, { headers });
+      }
+      navigate("/inquiry");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to save inquiry");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

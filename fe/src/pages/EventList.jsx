@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search, Plus, Download, Calendar, MapPin, Clock, Trash2, Edit, Eye,
 } from "lucide-react";
@@ -9,7 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import axios from "axios";
 
+const API = "http://localhost:5000/api";
 const StatusBadge = ({ status }) => {
   const styles = {
     upcoming: "bg-blue-100 text-blue-700",
@@ -34,7 +36,13 @@ export default function EventList() {
   const navigate = useNavigate();
 
   // TODO: Add fetchEvents function with API call
+  const 
   // TODO: Add useEffect to fetch on mount
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
 
   const toggleSelectAll = () => {
     if (selectedEvents.length === events.length) {

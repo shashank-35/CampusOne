@@ -35,21 +35,15 @@ export default function InquiryList() {
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const navigate = useNavigate();
 
-  // TODO: Add fetchInquiries function with API call\
   const fetchInquiries = () => {
     setLoading(true);
-    const header = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`};
-      axios.get(`${API}/inquiries`, { params: { search: searchTerm }, headers: header })
-      .then((res) => {
-        setInquiries(res.data.data || []);
-      }).catch(() => {
-        setInquiries([])
-      }).finally(() => {
-        setLoading(false);
-      });
+    const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+    axios.get(`${API}/inquiries`, { params: { search: searchTerm }, headers })
+      .then((res) => setInquiries(res.data.data || []))
+      .catch(() => setInquiries([]))
+      .finally(() => setLoading(false));
   };
-  // TODO: Add useEffect to fetch on mount
+
   useEffect(() => { fetchInquiries(); }, []);
   const toggleSelectAll = () => {
     if (selectedInquiries.length === inquiries.length) {
@@ -67,14 +61,15 @@ export default function InquiryList() {
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this inquiry?")) return;
-    // TODO: Add API delete call
+    try {
+      await axios.delete(`${API}/inquiries/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+      fetchInquiries();
+    } catch {}
+  };
 
-    try{
-      await axios.delete(`${API}/inquiries/${id}`, {
-        headers:{
-          Authorization: `Bearer ${localStorage.getItem("token")}`} });
-          fetchInquiries();
-    }catch{}
+  const viewInquiry = (inquiry) => {
+    setSelectedInquiry(inquiry);
+    setViewDialogOpen(true);
   };
 
   const filtered = inquiries.filter((i) =>
@@ -153,7 +148,7 @@ export default function InquiryList() {
                     <td className="p-4"><StatusBadge status={inquiry.status} /></td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => { setSelectedInquiry(inquiry); setViewDialogOpen(true); }} className="h-8 w-8 hover:text-blue-600"><Eye className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => viewInquiry(inquiry)} className="h-8 w-8 hover:text-blue-600"><Eye className="h-4 w-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => navigate(`/inquiry/edit/${inquiry._id}`)} className="h-8 w-8 hover:text-green-600"><Edit className="h-4 w-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(inquiry._id)} className="h-8 w-8 hover:text-red-600"><Trash2 className="h-4 w-4" /></Button>
                       </div>
