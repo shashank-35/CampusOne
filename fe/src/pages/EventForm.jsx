@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 
@@ -25,28 +25,60 @@ export function EventForm() {
   const [error, setError] = useState("");
 
   // TODO: Add useEffect to fetch event by id when isEdit is true
+useEffect(() => {
+  if (isEdit) {
+    setLoading(true);
+    axios.get(`${API}/events/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => {
+        const data = res.data.data;
+        setEvent({
+          title: data.title || "",
+          detail: data.detail || "",
+          host: data.host || "",
+          coordinator: data.coordinator || "",
+          date: data.date ? data.date.split("T")[0] : "",
+          timing: data.timing || "",
+          place: data.place || "",
+          type: data.type || "",
+          description: data.description || "",
+          locationLink: data.locationLink || "",
+        });
+      })
+      .catch(() => setError("Failed to load event data"))
+      .finally(() => setLoading(false));
+  }
+}, [id, isEdit]);
 
 
   // TODO: Add API call in handleSubmit
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+
     console.log("Form data:", event);
     
-
-    const res = await axios.post(
-      `${API}/events`,
-      event,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-
-    console.log("API response:", res.data);
-    navigate("/event");
+try{
+  const headers = {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
   };
+  if (isEdit) {
+    await axios.put(`${API}/events/${id}`, event, { headers });
+}else {
+    await axios.post(`${API}/events`, event, { headers });
+}
+    navigate("/event");
+  }catch (err) {
+    setError(err.response?.data?.message || "Failed to save event");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-6">

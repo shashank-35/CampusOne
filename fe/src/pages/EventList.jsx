@@ -36,8 +36,16 @@ export default function EventList() {
   const navigate = useNavigate();
 
   // TODO: Add fetchEvents function with API call
-  const 
-  // TODO: Add useEffect to fetch on mount
+  const fetchEvents = () => {
+    setLoading(true);
+    const headers = {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    };
+    axios.get(`${API}/events`, { params: { search: searchTerm }, headers })
+      .then((res) => setEvents(res.data.data || []))
+      .catch(() => setEvents([]))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     fetchEvents();
@@ -60,7 +68,15 @@ export default function EventList() {
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this event?")) return;
-    // TODO: Add API delete call
+    try {
+      await axios.delete(`${API}/events/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+      fetchEvents();
+    } catch {}
+  };
+
+  const viewEvent = (event) => {
+    setSelectedEvent(event);
+    setViewDialogOpen(true);
   };
 
   const filtered = events.filter((e) =>
@@ -153,7 +169,7 @@ export default function EventList() {
                     <td className="p-4"><StatusBadge status={event.status} /></td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => { setSelectedEvent(event); setViewDialogOpen(true); }} className="h-8 w-8 hover:text-blue-600"><Eye className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" onClick={() => viewEvent(event)} className="h-8 w-8 hover:text-blue-600"><Eye className="h-4 w-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => navigate(`/event/edit/${event._id}`)} className="h-8 w-8 hover:text-green-600"><Edit className="h-4 w-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(event._id)} className="h-8 w-8 hover:text-red-600"><Trash2 className="h-4 w-4" /></Button>
                       </div>
