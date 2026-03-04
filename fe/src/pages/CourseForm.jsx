@@ -11,8 +11,11 @@ const API = "http://localhost:5000/api";
 
 export function CourseForm() {
   const { id } = useParams();
+  console.log("🚀 ~ CourseForm ~ d:", id)
+
   const navigate = useNavigate();
   const isEdit = Boolean(id);
+  console.log("🚀 ~ CourseForm ~ isEdit:", isEdit)
 
   const [course, setCourse] = useState({
     title: "",
@@ -28,8 +31,12 @@ export function CourseForm() {
   useEffect(() => {
     if (isEdit) {
       setLoading(true);
-      const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
-      axios.get(`${API}/courses/${id}`, { headers })
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      };
+
+      axios
+        .get(`${API}/courses/${id}`, { headers })
         .then((res) => {
           const c = res.data.data;
           setCourse({
@@ -39,7 +46,9 @@ export function CourseForm() {
             fees: c.fees || "",
           });
         })
-        .catch((err) => setError(err.response?.data?.message || "Failed to load course"))
+        .catch((err) =>
+          setError(err.response?.data?.message || "Failed to load course"),
+        )
         .finally(() => setLoading(false));
     }
   }, [id, isEdit]);
@@ -49,7 +58,9 @@ export function CourseForm() {
     setLoading(true);
     setError("");
     try {
-      const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      };
       const formData = new FormData();
       formData.append("title", course.title);
       formData.append("description", course.description);
@@ -72,7 +83,11 @@ export function CourseForm() {
   };
 
   if (loading && isEdit && !course.title) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -85,7 +100,9 @@ export function CourseForm() {
         </CardHeader>
 
         {error && (
-          <div className="mx-6 p-3 bg-red-50 text-red-600 rounded-md text-sm">{error}</div>
+          <div className="mx-6 p-3 bg-red-50 text-red-600 rounded-md text-sm">
+            {error}
+          </div>
         )}
 
         <CardContent className="space-y-4">
@@ -94,7 +111,9 @@ export function CourseForm() {
               <Label>Course Title</Label>
               <Input
                 value={course.title}
-                onChange={(e) => setCourse({ ...course, title: e.target.value })}
+                onChange={(e) =>
+                  setCourse({ ...course, title: e.target.value })
+                }
                 placeholder="Enter course title"
                 className="bg-white border-zinc-300 text-black focus-visible:ring-zinc-400"
               />
@@ -104,7 +123,9 @@ export function CourseForm() {
               <Label>Description</Label>
               <Textarea
                 value={course.description}
-                onChange={(e) => setCourse({ ...course, description: e.target.value })}
+                onChange={(e) =>
+                  setCourse({ ...course, description: e.target.value })
+                }
                 placeholder="Enter course description"
                 className="bg-white border-zinc-300 text-black focus-visible:ring-zinc-400"
               />
@@ -114,7 +135,9 @@ export function CourseForm() {
               <Label>Duration</Label>
               <Input
                 value={course.duration}
-                onChange={(e) => setCourse({ ...course, duration: e.target.value })}
+                onChange={(e) =>
+                  setCourse({ ...course, duration: e.target.value })
+                }
                 placeholder="e.g. 6 Months"
                 className="bg-white border-zinc-300 text-black focus-visible:ring-zinc-400"
               />
@@ -153,7 +176,11 @@ export function CourseForm() {
               disabled={loading}
               className="w-full mt-4 bg-black text-white transition-all duration-300 hover:bg-zinc-700 hover:shadow-lg hover:scale-[1.02] disabled:opacity-50"
             >
-              {loading ? "Saving..." : isEdit ? "Update Course" : "Submit Course"}
+              {loading
+                ? "Saving..."
+                : isEdit
+                  ? "Update Course"
+                  : "Submit Course"}
             </Button>
           </form>
         </CardContent>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import  axios from "axios";
+import axios from "axios";
 
 const API = "http://localhost:5000/api";
 export function ProductForm() {
@@ -30,16 +30,11 @@ export function ProductForm() {
     e.preventDefault();
     console.log("Form data:", product);
 
-    const res = await axios.post(
-      `${API}/products`,
-        product,
-        {
-          headers :
-          {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
+    const res = await axios.post(`${API}/products`, product, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     console.log("API response:", res.data);
     navigate("/product");
   };
@@ -54,33 +49,88 @@ export function ProductForm() {
         </div>
 
         {error && (
-          <div className="mx-6 mt-4 p-3 bg-red-50 text-red-600 rounded-md text-sm">{error}</div>
+          <div className="mx-6 mt-4 p-3 bg-red-50 text-red-600 rounded-md text-sm">
+            {error}
+          </div>
         )}
 
         <div className="p-6 space-y-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-              <input type="text" name="productName" value={product.productName} onChange={handleChange} placeholder="Enter product name" className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Product Name
+              </label>
+              <input
+                type="text"
+                name="productName"
+                value={product.productName}
+                onChange={handleChange}
+                placeholder="Enter product name"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Receive Count</label>
-              <input type="number" name="receiveCount" value={product.receiveCount} onChange={handleChange} placeholder="Enter received quantity" className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Receive Count
+              </label>
+              <input
+                type="number"
+                name="receiveCount"
+                value={product.receiveCount}
+                onChange={handleChange}
+                placeholder="Enter received quantity"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Missing</label>
-              <input type="number" name="missing" value={product.missing} onChange={handleChange} placeholder="Enter missing count" className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Missing
+              </label>
+              <input
+                type="number"
+                name="missing"
+                value={product.missing}
+                onChange={handleChange}
+                placeholder="Enter missing count"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Available Count</label>
-              <input type="number" name="availableCount" value={product.availableCount} onChange={handleChange} placeholder="Enter available count" className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Available Count
+              </label>
+              <input
+                type="number"
+                name="availableCount"
+                value={product.availableCount}
+                onChange={handleChange}
+                placeholder="Enter available count"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-              <textarea name="description" value={product.description} onChange={handleChange} placeholder="Enter product description" rows="4" className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={product.description}
+                onChange={handleChange}
+                placeholder="Enter product description"
+                rows="4"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black"
+              />
             </div>
-            <button type="submit" disabled={loading} className="w-full h-11 text-base border border-gray-300 rounded-md bg-white text-gray-900 font-medium hover:bg-gray-900 hover:text-white hover:border-gray-900 transition disabled:opacity-50">
-              {loading ? "Saving..." : isEdit ? "Update Product" : "Save Product"}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-11 text-base border border-gray-300 rounded-md bg-white text-gray-900 font-medium hover:bg-gray-900 hover:text-white hover:border-gray-900 transition disabled:opacity-50"
+            >
+              {loading
+                ? "Saving..."
+                : isEdit
+                  ? "Update Product"
+                  : "Save Product"}
             </button>
           </form>
         </div>

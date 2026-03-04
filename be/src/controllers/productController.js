@@ -42,6 +42,7 @@ const getProduct = asyncHandler(async (req, res) => {
 // @desc    Create product
 // @route   POST /api/products
 const createProduct = asyncHandler(async (req, res) => {
+  console.log("🚀 ~ createProduct ~ req.body--->:", req.body)
   const product = await Product.create(req.body);
   ApiResponse.success(res, 'Product created successfully', product, 201);
 });

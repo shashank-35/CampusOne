@@ -28,10 +28,10 @@ export default function LoginForm() {
         email,
         password,
       });
-      console.log("🚀 ~ submitHandler ~ res:", res.data);
-      const { user, token } = res.data.data;
+      console.log("🚀 ~ submitHandler ~ res:", res?.data);
+      const { user, token } = res?.data?.data;
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(res));
+      localStorage.setItem("user", JSON.stringify(user));
       if (user.role === "student") {
         navigate("/student-home");
       } else {
