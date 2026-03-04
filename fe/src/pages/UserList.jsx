@@ -12,7 +12,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose,
 } from "@/components/ui/dialog";
+import axios from "axios";
 
+const API = "http://localhost:5000/api";
 const StatusBadge = ({ status }) => {
   const styles = {
     active: "bg-green-100 text-green-700",
@@ -51,7 +53,20 @@ export default function UserList() {
   const [selectedUserDetails, setSelectedUserDetails] = useState(null);
 
   // TODO: Add fetchUsers function with API call
+  const fetchUsers = async () => {
+    setLoading(true);
+    const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+    axios.get(`${API}/users`, { params: { search: searchTerm }, headers })
+      .then((res) => setUsers(res.data.data || []))
+      .catch(() => setUsers([]))
+      .finally(() => setLoading(false));
+      
+  };
+
   // TODO: Add useEffect to fetch on mount
+  React.useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const toggleSelectAll = () => {
     if (selectedUsers.length === users.length) {
@@ -70,6 +85,13 @@ export default function UserList() {
   const handleDelete = async (id, name) => {
     if (!confirm(`Delete ${name}?`)) return;
     // TODO: Add API delete call
+    try {
+      await axios.delete(`${API}/users/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      fetchUsers();
+    }
+    catch {}
   };
 
   const filteredUsers = users.filter((user) =>

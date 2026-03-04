@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 export function UserForm() {
@@ -26,6 +26,37 @@ export function UserForm() {
   const [error, setError] = useState("");
 
   // TODO: Add useEffect to fetch user by id when isEdit is true
+  useEffect(() => {
+    if (isEdit) {
+      setLoading(true);
+      axios.get(`${API}/users/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+
+        .then((res) => {
+          const userData = res.data.data;
+          setUser({
+            firstName: userData.firstName || "",
+            lastName: userData.lastName || "",
+            email: userData.email || "",
+            password: "",
+            dateOfBirth: userData.dateOfBirth ? userData.dateOfBirth.split("T")[0] : "",
+            gender: userData.gender || "",
+            mobileNumber: userData.mobileNumber || "",
+            addressLine1: userData.address?.line1 || "",
+            addressLine2: userData.address?.line2 || "",
+            city: userData.address?.city || "",
+            state: userData.address?.state || "",
+            pincode: userData.address?.pincode || "",
+            role: userData.role || "",
+          });
+        }
+        )
+        .catch(() => setError("Failed to load user data"))
+        .finally(() => setLoading(false));
+    }
+  }, [id, isEdit]);
+
   // TODO: Add API call in userHandler
 
   const handleInputChange = (e) => {
@@ -35,15 +66,23 @@ export function UserForm() {
 
   const userHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
     console.log("Form data:", user);
+try {
+    const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+    if (isEdit) {
+      const res = await axios.put(`${API}/users/${id}`, user, { headers });
+    }else {
 
-    const res = await axios.post(`${API}/users`, user, {
-      headers:  {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    console.log("API response:", res.data);
+     await axios.post(`${API}/users`, user, { headers });
+    }
     navigate("/user");
+  } catch (err) {
+    setError(err.response?.data?.message || "An error occurred");
+  } finally {
+    setLoading(false);
+  }
   };
 
   return (
