@@ -1,7 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import axios from "axios";
@@ -46,15 +42,15 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <Card className="w-full max-w-md bg-white border border-gray-200 shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-2xl font-semibold text-gray-800 text-center">
+    <div className="min-h-screen bg-gray-100 py-10 px-4">
+      <div className="mx-auto max-w-md bg-white border border-gray-200 shadow-sm rounded-lg">
+        <div className="pb-4 border-b border-gray-200 px-6 py-4">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">
             Login
-          </CardTitle>
-        </CardHeader>
+          </h2>
+        </div>
 
-        <CardContent className="space-y-6">
+        <div className="space-y-10 p-6">
           {error && (
             <div className="p-3 bg-red-50 text-red-600 rounded-md text-sm">
               {error}
@@ -62,46 +58,48 @@ export default function LoginForm() {
           )}
 
           <form onSubmit={submitHandler}>
-            <div className="group">
-              <Label className="group-hover:text-black">Email Address</Label>
-              <Input
-                type="email"
-                placeholder="example@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-              />
-            </div>
+            <section className="space-y-5">
+              <div className="group">
+                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  placeholder="example@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                />
+              </div>
 
-            <div className="group">
-              <Label className="group-hover:text-black">Password</Label>
-              <Input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="hover:border-gray-400 focus:border-black focus:ring-1 focus:ring-black"
-              />
-            </div>
+              <div className="group">
+                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                />
+              </div>
+            </section>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              variant="outline"
-              className="w-full h-11 text-base mt-4
-                       border-gray-300
-                       hover:bg-gray-900
-                       hover:text-white
-                       hover:border-gray-900
-                       disabled:opacity-50"
-            >
-              {loading ? "Logging in..." : "Login"}
-            </Button>
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-11 text-base border border-gray-300 rounded-md text-white font-medium bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] transition disabled:opacity-50"
+              >
+                {loading ? "Logging in..." : "Login"}
+              </button>
+            </div>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

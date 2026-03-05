@@ -83,10 +83,10 @@ export default function InquiryForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
-      <div className="w-full max-w-4xl bg-white shadow-md border border-gray-200 rounded-lg">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-800">
+    <div className="min-h-screen bg-gray-100 py-10 px-4">
+      <div className="mx-auto max-w-4xl bg-white border border-gray-200 shadow-sm rounded-lg">
+        <div className="pb-4 border-b border-gray-200 px-6 py-4">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">
             {isEdit ? "Edit Inquiry" : "Inquiry Form"}
           </h2>
         </div>
@@ -97,274 +97,299 @@ export default function InquiryForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="p-6 space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Source of Inquiry
-              </label>
-              <select
-                value={inquiry.sourceOfInquiry}
-                onChange={(e) =>
-                  setInquiry({ ...inquiry, sourceOfInquiry: e.target.value })
-                }
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Select source</option>
-                <option value="website">Website</option>
-                <option value="reference">Reference</option>
-                <option value="social">Social Media</option>
-              </select>
-            </div>
+        <div className="space-y-10 p-6">
+          <form onSubmit={handleSubmit}>
+            {/* SOURCE */}
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">
+                Inquiry Source
+              </h3>
+              <div className="group">
+                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                  Source of Inquiry
+                </label>
+                <select
+                  value={inquiry.sourceOfInquiry}
+                  onChange={(e) =>
+                    setInquiry({ ...inquiry, sourceOfInquiry: e.target.value })
+                  }
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                >
+                  <option value="">Select source</option>
+                  <option value="website">Website</option>
+                  <option value="reference">Reference</option>
+                  <option value="social">Social Media</option>
+                </select>
+              </div>
+            </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* BASIC INFO */}
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">
+                Basic Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    value={inquiry.firstName}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, firstName: e.target.value })
+                    }
+                    placeholder="Enter first name"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    value={inquiry.lastName}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, lastName: e.target.value })
+                    }
+                    placeholder="Enter last name"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={inquiry.email}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, email: e.target.value })
+                    }
+                    placeholder="example@mail.com"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Date of Birth
+                  </label>
+                  <input
+                    type="date"
+                    value={inquiry.dateOfBirth}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, dateOfBirth: e.target.value })
+                    }
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  First Name
+                <label className="block text-sm font-medium text-gray-700">
+                  Gender
+                </label>
+                <div className="flex gap-6">
+                  {["male", "female", "other"].map((g) => (
+                    <div key={g} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        id={g}
+                        name="gender"
+                        value={g}
+                        checked={inquiry.gender === g}
+                        onChange={(e) =>
+                          setInquiry({ ...inquiry, gender: e.target.value })
+                        }
+                      />
+                      <label
+                        htmlFor={g}
+                        className="text-sm font-medium text-gray-700 capitalize"
+                      >
+                        {g}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="group">
+                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                  Mobile Number
                 </label>
                 <input
-                  type="text"
-                  value={inquiry.firstName}
+                  type="tel"
+                  value={inquiry.mobile}
                   onChange={(e) =>
-                    setInquiry({ ...inquiry, firstName: e.target.value })
+                    setInquiry({ ...inquiry, mobile: e.target.value })
                   }
-                  placeholder="Enter first name"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter mobile number"
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Last Name
-                </label>
+            </section>
+
+            {/* ADDRESS */}
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">Address</h3>
+              <div className="p-5 border border-gray-200 rounded-md bg-gray-50 hover:bg-white hover:shadow-sm space-y-4">
                 <input
                   type="text"
-                  value={inquiry.lastName}
+                  value={inquiry.addressLine1}
                   onChange={(e) =>
-                    setInquiry({ ...inquiry, lastName: e.target.value })
+                    setInquiry({ ...inquiry, addressLine1: e.target.value })
                   }
-                  placeholder="Enter last name"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={inquiry.email}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, email: e.target.value })
-                  }
-                  placeholder="example@mail.com"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Date of Birth
-                </label>
-                <input
-                  type="date"
-                  value={inquiry.dateOfBirth}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, dateOfBirth: e.target.value })
-                  }
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Gender
-              </label>
-              <div className="flex gap-6">
-                {["male", "female", "other"].map((g) => (
-                  <div key={g} className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      id={g}
-                      name="gender"
-                      value={g}
-                      checked={inquiry.gender === g}
-                      onChange={(e) =>
-                        setInquiry({ ...inquiry, gender: e.target.value })
-                      }
-                      className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
-                    />
-                    <label
-                      htmlFor={g}
-                      className="text-sm font-medium text-gray-700 capitalize"
-                    >
-                      {g}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Mobile Number
-              </label>
-              <input
-                type="tel"
-                value={inquiry.mobile}
-                onChange={(e) =>
-                  setInquiry({ ...inquiry, mobile: e.target.value })
-                }
-                placeholder="Enter mobile number"
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Address
-              </label>
-              <input
-                type="text"
-                value={inquiry.addressLine1}
-                onChange={(e) =>
-                  setInquiry({ ...inquiry, addressLine1: e.target.value })
-                }
-                placeholder="Address Line 1"
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <input
-                type="text"
-                value={inquiry.addressLine2}
-                onChange={(e) =>
-                  setInquiry({ ...inquiry, addressLine2: e.target.value })
-                }
-                placeholder="Address Line 2"
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input
-                  type="text"
-                  value={inquiry.city}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, city: e.target.value })
-                  }
-                  placeholder="City"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Address Line 1"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
                 />
                 <input
                   type="text"
-                  value={inquiry.state}
+                  value={inquiry.addressLine2}
                   onChange={(e) =>
-                    setInquiry({ ...inquiry, state: e.target.value })
+                    setInquiry({ ...inquiry, addressLine2: e.target.value })
                   }
-                  placeholder="State"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Address Line 2"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
                 />
-                <input
-                  type="text"
-                  value={inquiry.pincode}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, pincode: e.target.value })
-                  }
-                  placeholder="Pincode"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <input
+                    type="text"
+                    value={inquiry.city}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, city: e.target.value })
+                    }
+                    placeholder="City"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                  <input
+                    type="text"
+                    value={inquiry.state}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, state: e.target.value })
+                    }
+                    placeholder="State"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                  <input
+                    type="text"
+                    value={inquiry.pincode}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, pincode: e.target.value })
+                    }
+                    placeholder="Pincode"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
               </div>
-            </div>
+            </section>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Tech Background
-              </label>
+            {/* BACKGROUND */}
+            <section className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-700">
+                Technical Background
+              </h3>
               <select
                 value={inquiry.techBackground}
                 onChange={(e) =>
                   setInquiry({ ...inquiry, techBackground: e.target.value })
                 }
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
               >
                 <option value="">Select background</option>
                 <option value="tech">Tech</option>
                 <option value="non-tech">Non Tech</option>
               </select>
-            </div>
+            </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Qualification
+            {/* EDUCATION */}
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">
+                Education Details
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Qualification
+                  </label>
+                  <input
+                    type="text"
+                    value={inquiry.qualification}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, qualification: e.target.value })
+                    }
+                    placeholder="e.g. BSc, BTech"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Specialization
+                  </label>
+                  <input
+                    type="text"
+                    value={inquiry.specialization}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, specialization: e.target.value })
+                    }
+                    placeholder="e.g. Computer Science"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Passing Year
+                  </label>
+                  <input
+                    type="number"
+                    value={inquiry.passingYear}
+                    onChange={(e) =>
+                      setInquiry({ ...inquiry, passingYear: e.target.value })
+                    }
+                    placeholder="2024"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* INTERESTED AREA */}
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">
+                Interest
+              </h3>
+              <div className="group">
+                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                  Interested Area
                 </label>
                 <input
                   type="text"
-                  value={inquiry.qualification}
+                  value={inquiry.interestedArea}
                   onChange={(e) =>
-                    setInquiry({ ...inquiry, qualification: e.target.value })
+                    setInquiry({ ...inquiry, interestedArea: e.target.value })
                   }
-                  placeholder="e.g. BSc, BTech"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Web Development, Data Science, etc."
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Specialization
-                </label>
-                <input
-                  type="text"
-                  value={inquiry.specialization}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, specialization: e.target.value })
-                  }
-                  placeholder="e.g. Computer Science"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Passing Year
-                </label>
-                <input
-                  type="number"
-                  value={inquiry.passingYear}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, passingYear: e.target.value })
-                  }
-                  placeholder="2024"
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-            </div>
+            </section>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Interested Area
-              </label>
-              <input
-                type="text"
-                value={inquiry.interestedArea}
-                onChange={(e) =>
-                  setInquiry({ ...inquiry, interestedArea: e.target.value })
-                }
-                placeholder="Web Development, Data Science, etc."
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+            {/* SUBMIT */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-11 text-base border border-gray-300 rounded-md text-white font-medium bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] transition disabled:opacity-50"
+              >
+                {loading
+                  ? "Saving..."
+                  : isEdit
+                    ? "Update Inquiry"
+                    : "Submit Inquiry"}
+              </button>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full inline-flex items-center justify-center rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-            >
-              {loading
-                ? "Saving..."
-                : isEdit
-                  ? "Update Inquiry"
-                  : "Submit Inquiry"}
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

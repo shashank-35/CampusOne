@@ -116,7 +116,7 @@ export default function UserList() {
             <Download className="mr-2 h-4 w-4" /> Export
           </Button>
           <Link to="/user/create">
-            <Button className="bg-black hover:bg-zinc-800 text-white">
+            <Button className="bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] text-white">
               <Plus className="mr-2 h-4 w-4" /> Add User
             </Button>
           </Link>
@@ -240,7 +240,7 @@ export default function UserList() {
                 </div>
               </div>
               <div className="flex gap-3 pt-4">
-                <Button onClick={() => { navigate(`/user/edit/${selectedUserDetails._id}`); setIsDialogOpen(false); }} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={() => { navigate(`/user/edit/${selectedUserDetails._id}`); setIsDialogOpen(false); }} className="flex-1 bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] text-white">
                   <Edit className="h-4 w-4 mr-2" /> Edit
                 </Button>
                 <Button onClick={() => setIsDialogOpen(false)} variant="outline" className="flex-1">Close</Button>

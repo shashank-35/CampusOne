@@ -87,7 +87,7 @@ export default function InquiryList() {
             <Download className="mr-2 h-4 w-4" /> Export
           </Button>
           <Link to="/inquiry/create">
-            <Button className="bg-black hover:bg-zinc-800 text-white">
+            <Button className="bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] text-white">
               <Plus className="mr-2 h-4 w-4" /> Add Inquiry
             </Button>
           </Link>
@@ -194,7 +194,7 @@ export default function InquiryList() {
                 </div>
               </div>
               <div className="flex gap-2 pt-4">
-                <Button onClick={() => navigate(`/inquiry/edit/${selectedInquiry._id}`)} className="flex-1 bg-blue-600 hover:bg-blue-700">
+                <Button onClick={() => navigate(`/inquiry/edit/${selectedInquiry._id}`)} className="flex-1 bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)]">
                   <Edit className="h-4 w-4 mr-2" /> Edit
                 </Button>
                 <Button onClick={() => setViewDialogOpen(false)} variant="outline" className="flex-1">Close</Button>

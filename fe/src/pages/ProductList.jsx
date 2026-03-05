@@ -88,7 +88,7 @@ const fetchProducts = async () => {
             <Download className="h-4 w-4" /> Export
           </button>
           <Link to="/product/create">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium">
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] text-white font-medium">
               <Plus className="h-4 w-4" /> Add Product
             </button>
           </Link>
@@ -204,7 +204,7 @@ const fetchProducts = async () => {
                 </div>
               )}
               <div className="flex gap-2 pt-4">
-                <button onClick={() => { setViewDialogOpen(false); navigate(`/product/edit/${selectedProduct._id}`); }} className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">Edit</button>
+                <button onClick={() => { setViewDialogOpen(false); navigate(`/product/edit/${selectedProduct._id}`); }} className="flex-1 px-4 py-2  text-white rounded-lg font-medium transition">Edit</button>
                 <button onClick={() => setViewDialogOpen(false)} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition">Close</button>
               </div>
             </div>

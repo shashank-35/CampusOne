@@ -5,11 +5,11 @@ export default function TopNav() {
   return (
     <header className="flex rounded-2xl bg-(--theme-background-color) text-(--theme-foreground-color) justify-between items-center p-4 shadow">
       <div>
-        <input
+        {/* <input
           type="text"
           placeholder="Search..."
           className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring"
-        />
+        /> */}
       </div>
       <div className="flex items-center space-x-4">
         {/* User/profile icon */}

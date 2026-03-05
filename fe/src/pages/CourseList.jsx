@@ -94,7 +94,7 @@ export default function CourseList() {
             <Download className="mr-2 h-4 w-4" /> Export
           </Button>
           <Link to="/course/create">
-            <Button className="bg-black hover:bg-zinc-800 text-white">
+            <Button className="bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] text-white">
               <Plus className="mr-2 h-4 w-4" /> Add Course
             </Button>
           </Link>
@@ -265,7 +265,7 @@ export default function CourseList() {
               <div className="flex gap-2 pt-4">
                 <Button
                   onClick={() => navigate(`/course/edit/${selectedCourse._id}`)}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  className="flex-1 bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)]"
                 >
                   <Edit className="h-4 w-4 mr-2" /> Edit
                 </Button>

@@ -93,7 +93,7 @@ export default function StudentList() {
             <Download className="mr-2 h-4 w-4" /> Export
           </Button>
           <Link to="/student/create">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button className="bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] text-white">
               <Plus className="mr-2 h-4 w-4" /> Add Student
             </Button>
           </Link>
@@ -208,7 +208,7 @@ export default function StudentList() {
                 </div>
               </div>
               <div className="flex gap-2 pt-4">
-                <Button onClick={() => navigate(`/student/edit/${selectedStudent._id}`)} className="flex-1 bg-blue-600 hover:bg-blue-700">
+                <Button onClick={() => navigate(`/student/edit/${selectedStudent._id}`)} className="flex-1 bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)]">
                   <Edit className="h-4 w-4 mr-2" /> Edit
                 </Button>
                 <Button onClick={() => setViewDialogOpen(false)} variant="outline" className="flex-1">Close</Button>

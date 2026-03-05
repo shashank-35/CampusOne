@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 
 const API = "http://localhost:5000/api";
 
@@ -91,100 +86,130 @@ export function CourseForm() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-6">
-      <Card className="w-full max-w-xl bg-white text-black shadow-lg rounded-2xl border border-zinc-200">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center font-semibold">
+    <div className="min-h-screen bg-gray-100 py-10 px-4">
+      <div className="mx-auto max-w-4xl bg-white border border-gray-200 shadow-sm rounded-lg">
+        <div className="pb-4 border-b border-gray-200 px-6 py-4">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">
             {isEdit ? "Edit Course" : "Create Course"}
-          </CardTitle>
-        </CardHeader>
+          </h2>
+        </div>
 
         {error && (
-          <div className="mx-6 p-3 bg-red-50 text-red-600 rounded-md text-sm">
+          <div className="mx-6 mt-4 p-3 bg-red-50 text-red-600 rounded-md text-sm">
             {error}
           </div>
         )}
 
-        <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1">
-              <Label>Course Title</Label>
-              <Input
-                value={course.title}
-                onChange={(e) =>
-                  setCourse({ ...course, title: e.target.value })
-                }
-                placeholder="Enter course title"
-                className="bg-white border-zinc-300 text-black focus-visible:ring-zinc-400"
-              />
-            </div>
+        <div className="space-y-10 p-6">
+          <form onSubmit={handleSubmit}>
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">
+                Course Details
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Course Title
+                  </label>
+                  <input
+                    type="text"
+                    value={course.title}
+                    onChange={(e) =>
+                      setCourse({ ...course, title: e.target.value })
+                    }
+                    placeholder="Enter course title"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Duration
+                  </label>
+                  <input
+                    type="text"
+                    value={course.duration}
+                    onChange={(e) =>
+                      setCourse({ ...course, duration: e.target.value })
+                    }
+                    placeholder="e.g. 6 Months"
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+              </div>
 
-            <div className="space-y-1">
-              <Label>Description</Label>
-              <Textarea
-                value={course.description}
-                onChange={(e) =>
-                  setCourse({ ...course, description: e.target.value })
-                }
-                placeholder="Enter course description"
-                className="bg-white border-zinc-300 text-black focus-visible:ring-zinc-400"
-              />
-            </div>
+              <div className="group">
+                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                  Description
+                </label>
+                <textarea
+                  value={course.description}
+                  onChange={(e) =>
+                    setCourse({ ...course, description: e.target.value })
+                  }
+                  placeholder="Enter course description"
+                  rows="4"
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                />
+              </div>
 
-            <div className="space-y-1">
-              <Label>Duration</Label>
-              <Input
-                value={course.duration}
-                onChange={(e) =>
-                  setCourse({ ...course, duration: e.target.value })
-                }
-                placeholder="e.g. 6 Months"
-                className="bg-white border-zinc-300 text-black focus-visible:ring-zinc-400"
-              />
-            </div>
+              <div className="group">
+                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                  Fees Structure
+                </label>
+                <input
+                  type="text"
+                  value={course.fees}
+                  onChange={(e) => setCourse({ ...course, fees: e.target.value })}
+                  placeholder="25,000"
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                />
+              </div>
+            </section>
 
-            <div className="space-y-1">
-              <Label>Fees Structure</Label>
-              <Input
-                value={course.fees}
-                onChange={(e) => setCourse({ ...course, fees: e.target.value })}
-                placeholder="25,000"
-                className="bg-white border-zinc-300 text-black focus-visible:ring-zinc-400"
-              />
-            </div>
+            <section className="space-y-5">
+              <h3 className="text-lg font-medium text-gray-700">
+                Attachments
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Handbook (PDF)
+                  </label>
+                  <input
+                    type="file"
+                    onChange={(e) => setHandbook(e.target.files[0])}
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+                <div className="group">
+                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
+                    Topic Sheet
+                  </label>
+                  <input
+                    type="file"
+                    onChange={(e) => setTopicSheet(e.target.files[0])}
+                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  />
+                </div>
+              </div>
+            </section>
 
-            <div className="space-y-1">
-              <Label>Handbook (PDF)</Label>
-              <Input
-                type="file"
-                onChange={(e) => setHandbook(e.target.files[0])}
-                className="bg-white border-zinc-300 text-black focus-visible:ring-zinc-400"
-              />
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-11 text-base border border-gray-300 rounded-md text-white font-medium bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] transition disabled:opacity-50"
+              >
+                {loading
+                  ? "Saving..."
+                  : isEdit
+                    ? "Update Course"
+                    : "Submit Course"}
+              </button>
             </div>
-
-            <div className="space-y-1">
-              <Label>Topic Sheet</Label>
-              <Input
-                type="file"
-                onChange={(e) => setTopicSheet(e.target.files[0])}
-                className="bg-white border-zinc-300 text-black focus-visible:ring-zinc-400"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full mt-4 bg-black text-white transition-all duration-300 hover:bg-zinc-700 hover:shadow-lg hover:scale-[1.02] disabled:opacity-50"
-            >
-              {loading
-                ? "Saving..."
-                : isEdit
-                  ? "Update Course"
-                  : "Submit Course"}
-            </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -47,6 +47,7 @@
 
 :root {
   --theme-background-color: #002C5D;
+  --theme-button-color: #002C5D;
   --theme-foreground-color: #ffffff;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
