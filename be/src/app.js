@@ -10,33 +10,42 @@ const config = require('./config/config');
 const errorHandler = require('./middleware/errorHandler');
 
 // Route imports
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const studentRoutes = require('./routes/studentRoutes');
-const courseRoutes = require('./routes/courseRoutes');
-const eventRoutes = require('./routes/eventRoutes');
-const inquiryRoutes = require('./routes/inquiryRoutes');
-const productRoutes = require('./routes/productRoutes');
-const todoRoutes = require('./routes/todoRoutes');
-const dashboardRoutes = require('./routes/dashboardRoutes');
+const authRoutes         = require('./routes/authRoutes');
+const userRoutes         = require('./routes/userRoutes');
+const studentRoutes      = require('./routes/studentRoutes');
+const courseRoutes       = require('./routes/courseRoutes');
+const eventRoutes        = require('./routes/eventRoutes');
+const inquiryRoutes      = require('./routes/inquiryRoutes');
+const productRoutes      = require('./routes/productRoutes');
+const todoRoutes         = require('./routes/todoRoutes');
+const dashboardRoutes    = require('./routes/dashboardRoutes');
+const profileRoutes      = require('./routes/profileRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const activityLogRoutes  = require('./routes/activityLogRoutes');
+const qrRoutes           = require('./routes/qrRoutes');
+const studentPortalRoutes = require('./routes/studentPortalRoutes');
+const admissionRoutes     = require('./routes/admissionRoutes');
+const paymentRoutes       = require('./routes/paymentRoutes');
 
 const app = express();
 
-// Security middleware
+// Security
 app.use(helmet());
 app.use(cors());
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  message: { success: false, message: 'Too many requests, please try again later' },
-});
-app.use('/api', limiter);
+// Rate limiting (disabled in development)
+if (config.nodeEnv === 'production') {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 200,
+    message: { success: false, message: 'Too many requests, please try again later' },
+  });
+  app.use('/api', limiter);
+}
 
 // Body parsing
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Logging
 if (config.nodeEnv === 'development') {
@@ -53,19 +62,26 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
 }));
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/students', studentRoutes);
-app.use('/api/courses', courseRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/inquiries', inquiryRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/todos', todoRoutes);
-app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/auth',          authRoutes);
+app.use('/api/users',         userRoutes);
+app.use('/api/students',      studentRoutes);
+app.use('/api/courses',       courseRoutes);
+app.use('/api/events',        eventRoutes);
+app.use('/api/inquiries',     inquiryRoutes);
+app.use('/api/products',      productRoutes);
+app.use('/api/todos',         todoRoutes);
+app.use('/api/dashboard',     dashboardRoutes);
+app.use('/api/profile',       profileRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/activity-logs', activityLogRoutes);
+app.use('/api/qr',            qrRoutes);
+app.use('/api/student-portal', studentPortalRoutes);
+app.use('/api/admissions',    admissionRoutes);
+app.use('/api/payments',      paymentRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'CampusOne API is running' });
+  res.json({ success: true, message: 'CampusOne API is running', version: '2.0.0' });
 });
 
 // 404 handler

@@ -1,38 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { getStats } = require('../controllers/dashboardController');
+const {
+  getStats, getMonthlyInquiries, getInquiryStatusBreakdown, getRecentInquiries,
+  getPaymentStats, getMonthlyRevenue,
+} = require('../controllers/dashboardController');
 const { protect } = require('../middleware/auth');
 
 router.use(protect);
 
-/**
- * @swagger
- * /dashboard/stats:
- *   get:
- *     summary: Get dashboard statistics
- *     tags: [Dashboard]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Dashboard stats retrieved
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/ApiResponse'
- *                 - type: object
- *                   properties:
- *                     data:
- *                       type: object
- *                       properties:
- *                         totalStudents: { type: number }
- *                         totalCourses: { type: number }
- *                         upcomingEvents: { type: number }
- *                         newInquiries: { type: number }
- *                         totalProducts: { type: number }
- *                         totalUsers: { type: number }
- */
-router.get('/stats', getStats);
+router.get('/stats',             getStats);
+router.get('/monthly-inquiries', getMonthlyInquiries);
+router.get('/inquiry-status',    getInquiryStatusBreakdown);
+router.get('/recent-inquiries',  getRecentInquiries);
+router.get('/payment-stats',     getPaymentStats);
+router.get('/monthly-revenue',   getMonthlyRevenue);
 
 module.exports = router;

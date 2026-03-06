@@ -1,395 +1,448 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
-import  axios from "axios";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router';
+import toast from 'react-hot-toast';
+import inquiryService from '@/services/inquiryService';
+import { useAuth } from '@/context/AuthContext';
 
-const API = "http://localhost:5000/api";
+const inputCls =
+  'w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent';
+const labelCls = 'block text-sm font-medium text-gray-700 mb-1';
+
+const STATUSES = ['new', 'contacted', 'interested', 'admission-done', 'not-interested', 'closed'];
+const SOURCES = ['website', 'reference', 'social', 'walk-in', 'qr-code'];
+
+// ⚠️ CRITICAL: Section MUST be defined outside InquiryForm.
+// Defining it inside causes React to treat it as a NEW component type on every
+// render, unmounting/remounting all child inputs → inputs lose focus on each keystroke.
+function Section({ title, children }) {
+  return (
+    <section className="space-y-4">
+      <h3 className="text-base font-semibold text-gray-800 pb-2 border-b border-gray-100">
+        {title}
+      </h3>
+      {children}
+    </section>
+  );
+}
+
+const INITIAL_FORM = {
+  sourceOfInquiry: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  dateOfBirth: '',
+  gender: 'male',
+  mobile: '',
+  addressLine1: '',
+  addressLine2: '',
+  city: '',
+  state: '',
+  pincode: '',
+  techBackground: '',
+  qualification: '',
+  specialization: '',
+  passingYear: '',
+  interestedArea: '',
+  status: 'new',
+  followUpDate: '',
+};
 
 export default function InquiryForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const isEdit = Boolean(id);
+  const isCounselor = user?.role === 'counselor';
 
-  const [inquiry, setInquiry] = useState({
-    sourceOfInquiry: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    dateOfBirth: "",
-    gender: "male",
-    mobile: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    pincode: "",
-    techBackground: "",
-    qualification: "",
-    specialization: "",
-    passingYear: "",
-    interestedArea: "",
-    // assignTo: "",
-  });
+  const [form, setForm] = useState(INITIAL_FORM);
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
+  // ---- load data for edit mode ----
   useEffect(() => {
-    if (isEdit) {
-      setLoading(true);
-      axios.get(`${API}/inquiries/${id}`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
-        .then((res) => {
-          const s = res.data.data;
-          setInquiry({
-            sourceOfInquiry: s.sourceOfInquiry || "",
-            firstName: s.firstName || "",
-            lastName: s.lastName || "",
-            email: s.email || "",
-            dateOfBirth: s.dateOfBirth ? s.dateOfBirth.split("T")[0] : "",
-            gender: s.gender || "male",
-            mobile: s.mobile || "",
-            addressLine1: s.addressLine1 || "",
-            addressLine2: s.addressLine2 || "",
-            city: s.city || "",
-            state: s.state || "",
-            pincode: s.pincode || "",
-            techBackground: s.techBackground || "",
-            qualification: s.qualification || "",
-            specialization: s.specialization || "",
-            passingYear: s.passingYear || "",
-            interestedArea: s.interestedArea || "",
-          });
-        })
-        .catch((err) => setError(err.response?.data?.message || "Failed to load inquiry"))
-        .finally(() => setLoading(false));
-    }
+    if (!isEdit) return;
+    setLoading(true);
+    inquiryService
+      .getById(id)
+      .then((res) => {
+        const s = res.data.data;
+        setForm({
+          sourceOfInquiry: s.sourceOfInquiry || '',
+          firstName: s.firstName || '',
+          lastName: s.lastName || '',
+          email: s.email || '',
+          dateOfBirth: s.dateOfBirth ? s.dateOfBirth.split('T')[0] : '',
+          gender: s.gender || 'male',
+          mobile: s.mobile || '',
+          addressLine1: s.addressLine1 || '',
+          addressLine2: s.addressLine2 || '',
+          city: s.city || '',
+          state: s.state || '',
+          pincode: s.pincode || '',
+          techBackground: s.techBackground || '',
+          qualification: s.qualification || '',
+          specialization: s.specialization || '',
+          passingYear: s.passingYear || '',
+          interestedArea: s.interestedArea || '',
+          status: s.status || 'new',
+          followUpDate: s.followUpDate ? s.followUpDate.split('T')[0] : '',
+        });
+      })
+      .catch((err) =>
+        toast.error(err.response?.data?.message || 'Failed to load inquiry')
+      )
+      .finally(() => setLoading(false));
   }, [id, isEdit]);
 
+  // ---- generic field setter ----
+  const handleChange = (field) => (e) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    // clear per-field error on change
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
+  };
+
+  // ---- client-side validation ----
+  const validate = () => {
+    const errs = {};
+    if (!form.firstName.trim()) errs.firstName = 'First name is required';
+    else if (form.firstName.trim().length < 2) errs.firstName = 'Min 2 characters';
+    if (!form.lastName.trim()) errs.lastName = 'Last name is required';
+    else if (form.lastName.trim().length < 2) errs.lastName = 'Min 2 characters';
+    if (form.email && !/^\S+@\S+\.\S+$/.test(form.email))
+      errs.email = 'Invalid email address';
+    if (form.mobile && !/^\d{10}$/.test(form.mobile))
+      errs.mobile = 'Mobile must be exactly 10 digits';
+    if (form.pincode && !/^\d{6}$/.test(form.pincode))
+      errs.pincode = 'Pincode must be 6 digits';
+    return errs;
+  };
+
+  // ---- submit ----
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      toast.error('Please fix the highlighted errors');
+      return;
+    }
+
     setLoading(true);
-    setError("");
     try {
-      const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
       if (isEdit) {
-        await axios.put(`${API}/inquiries/${id}`, inquiry, { headers });
+        await inquiryService.update(id, form);
+        toast.success('Inquiry updated successfully');
       } else {
-        await axios.post(`${API}/inquiries`, inquiry, { headers });
+        await inquiryService.create(form);
+        toast.success('Inquiry created successfully');
       }
-      navigate("/inquiry");
+      navigate('/inquiry');
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to save inquiry");
+      const msg = err.response?.data?.message || 'Failed to save inquiry';
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
+  // ---- error helper ----
+  const Err = ({ field }) =>
+    errors[field] ? (
+      <p className="text-red-500 text-xs mt-1">{errors[field]}</p>
+    ) : null;
+
+  if (loading && isEdit) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800" />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4">
-      <div className="mx-auto max-w-4xl bg-white border border-gray-200 shadow-sm rounded-lg">
-        <div className="pb-4 border-b border-gray-200 px-6 py-4">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">
-            {isEdit ? "Edit Inquiry" : "Inquiry Form"}
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="mx-auto max-w-4xl bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-800 px-6 py-4">
+          <h2 className="text-white font-semibold text-lg">
+            {isEdit ? 'Edit Inquiry' : 'New Inquiry'}
           </h2>
+          <p className="text-slate-300 text-sm mt-0.5">
+            {isEdit ? 'Update inquiry information' : 'Create a new student inquiry'}
+          </p>
         </div>
 
-        {error && (
-          <div className="mx-6 mt-4 p-3 bg-red-50 text-red-600 rounded-md text-sm">
-            {error}
-          </div>
-        )}
-
-        <div className="space-y-10 p-6">
-          <form onSubmit={handleSubmit}>
-            {/* SOURCE */}
-            <section className="space-y-5">
-              <h3 className="text-lg font-medium text-gray-700">
-                Inquiry Source
-              </h3>
-              <div className="group">
-                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                  Source of Inquiry
-                </label>
+        <form onSubmit={handleSubmit} className="p-6 space-y-8" noValidate>
+          {/* ── Inquiry Info ── */}
+          <Section title="Inquiry Info">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className={labelCls}>Source of Inquiry</label>
                 <select
-                  value={inquiry.sourceOfInquiry}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, sourceOfInquiry: e.target.value })
-                  }
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  value={form.sourceOfInquiry}
+                  onChange={handleChange('sourceOfInquiry')}
+                  className={inputCls}
                 >
                   <option value="">Select source</option>
-                  <option value="website">Website</option>
-                  <option value="reference">Reference</option>
-                  <option value="social">Social Media</option>
+                  {SOURCES.map((s) => (
+                    <option key={s} value={s} className="capitalize">
+                      {s.replace('-', ' ')}
+                    </option>
+                  ))}
                 </select>
               </div>
-            </section>
+              <div>
+                <label className={labelCls}>Status</label>
+                <select
+                  value={form.status}
+                  onChange={handleChange('status')}
+                  className={inputCls}
+                >
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s} className="capitalize">
+                      {s.replace('-', ' ')}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className={labelCls}>Follow-Up Date</label>
+                <input
+                  type="date"
+                  value={form.followUpDate}
+                  onChange={handleChange('followUpDate')}
+                  className={inputCls}
+                />
+              </div>
+            </div>
+          </Section>
 
-            {/* BASIC INFO */}
-            <section className="space-y-5">
-              <h3 className="text-lg font-medium text-gray-700">
-                Basic Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="group">
-                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    value={inquiry.firstName}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, firstName: e.target.value })
-                    }
-                    placeholder="Enter first name"
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                  />
-                </div>
-                <div className="group">
-                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    value={inquiry.lastName}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, lastName: e.target.value })
-                    }
-                    placeholder="Enter last name"
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                  />
-                </div>
-                <div className="group">
-                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={inquiry.email}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, email: e.target.value })
-                    }
-                    placeholder="example@mail.com"
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                  />
-                </div>
-                <div className="group">
-                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    value={inquiry.dateOfBirth}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, dateOfBirth: e.target.value })
-                    }
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                  />
-                </div>
+          {/* ── Personal Information ── */}
+          <Section title="Personal Information">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className={labelCls}>
+                  First Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.firstName}
+                  onChange={handleChange('firstName')}
+                  placeholder="Enter first name"
+                  className={`${inputCls} ${errors.firstName ? 'border-red-400' : ''}`}
+                  autoComplete="given-name"
+                />
+                <Err field="firstName" />
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Gender
+              <div>
+                <label className={labelCls}>
+                  Last Name <span className="text-red-500">*</span>
                 </label>
-                <div className="flex gap-6">
-                  {["male", "female", "other"].map((g) => (
-                    <div key={g} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={form.lastName}
+                  onChange={handleChange('lastName')}
+                  placeholder="Enter last name"
+                  className={`${inputCls} ${errors.lastName ? 'border-red-400' : ''}`}
+                  autoComplete="family-name"
+                />
+                <Err field="lastName" />
+              </div>
+
+              <div>
+                <label className={labelCls}>Email</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange('email')}
+                  placeholder="email@example.com"
+                  className={`${inputCls} ${errors.email ? 'border-red-400' : ''}`}
+                  autoComplete="email"
+                />
+                <Err field="email" />
+              </div>
+
+              <div>
+                <label className={labelCls}>Mobile Number</label>
+                <input
+                  type="tel"
+                  value={form.mobile}
+                  onChange={handleChange('mobile')}
+                  placeholder="10-digit number"
+                  maxLength={10}
+                  className={`${inputCls} ${errors.mobile ? 'border-red-400' : ''}`}
+                  autoComplete="tel"
+                />
+                <Err field="mobile" />
+              </div>
+
+              <div>
+                <label className={labelCls}>Date of Birth</label>
+                <input
+                  type="date"
+                  value={form.dateOfBirth}
+                  onChange={handleChange('dateOfBirth')}
+                  className={inputCls}
+                />
+              </div>
+
+              <div>
+                <label className={labelCls}>Gender</label>
+                <div className="flex gap-5 mt-2">
+                  {['male', 'female', 'other'].map((g) => (
+                    <label
+                      key={g}
+                      className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+                    >
                       <input
                         type="radio"
-                        id={g}
                         name="gender"
                         value={g}
-                        checked={inquiry.gender === g}
-                        onChange={(e) =>
-                          setInquiry({ ...inquiry, gender: e.target.value })
-                        }
+                        checked={form.gender === g}
+                        onChange={handleChange('gender')}
                       />
-                      <label
-                        htmlFor={g}
-                        className="text-sm font-medium text-gray-700 capitalize"
-                      >
-                        {g}
-                      </label>
-                    </div>
+                      <span className="capitalize">{g}</span>
+                    </label>
                   ))}
                 </div>
               </div>
+            </div>
+          </Section>
 
-              <div className="group">
-                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                  Mobile Number
-                </label>
-                <input
-                  type="tel"
-                  value={inquiry.mobile}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, mobile: e.target.value })
-                  }
-                  placeholder="Enter mobile number"
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                />
-              </div>
-            </section>
-
-            {/* ADDRESS */}
-            <section className="space-y-5">
-              <h3 className="text-lg font-medium text-gray-700">Address</h3>
-              <div className="p-5 border border-gray-200 rounded-md bg-gray-50 hover:bg-white hover:shadow-sm space-y-4">
+          {/* ── Address ── */}
+          <Section title="Address">
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={form.addressLine1}
+                onChange={handleChange('addressLine1')}
+                placeholder="Address Line 1"
+                className={inputCls}
+              />
+              <input
+                type="text"
+                value={form.addressLine2}
+                onChange={handleChange('addressLine2')}
+                placeholder="Address Line 2 (optional)"
+                className={inputCls}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <input
                   type="text"
-                  value={inquiry.addressLine1}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, addressLine1: e.target.value })
-                  }
-                  placeholder="Address Line 1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  value={form.city}
+                  onChange={handleChange('city')}
+                  placeholder="City"
+                  className={inputCls}
                 />
                 <input
                   type="text"
-                  value={inquiry.addressLine2}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, addressLine2: e.target.value })
-                  }
-                  placeholder="Address Line 2"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                  value={form.state}
+                  onChange={handleChange('state')}
+                  placeholder="State"
+                  className={inputCls}
                 />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
                   <input
                     type="text"
-                    value={inquiry.city}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, city: e.target.value })
-                    }
-                    placeholder="City"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                  />
-                  <input
-                    type="text"
-                    value={inquiry.state}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, state: e.target.value })
-                    }
-                    placeholder="State"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                  />
-                  <input
-                    type="text"
-                    value={inquiry.pincode}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, pincode: e.target.value })
-                    }
+                    value={form.pincode}
+                    onChange={handleChange('pincode')}
                     placeholder="Pincode"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                    maxLength={6}
+                    className={`${inputCls} ${errors.pincode ? 'border-red-400' : ''}`}
                   />
+                  <Err field="pincode" />
                 </div>
               </div>
-            </section>
+            </div>
+          </Section>
 
-            {/* BACKGROUND */}
-            <section className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-700">
-                Technical Background
-              </h3>
+          {/* ── Education & Background ── */}
+          <Section title="Education & Background">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className={labelCls}>Qualification</label>
+                <input
+                  type="text"
+                  value={form.qualification}
+                  onChange={handleChange('qualification')}
+                  placeholder="e.g. BTech, BSc"
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Specialization</label>
+                <input
+                  type="text"
+                  value={form.specialization}
+                  onChange={handleChange('specialization')}
+                  placeholder="e.g. Computer Science"
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Passing Year</label>
+                <input
+                  type="number"
+                  value={form.passingYear}
+                  onChange={handleChange('passingYear')}
+                  placeholder="2024"
+                  min="1990"
+                  max={new Date().getFullYear() + 2}
+                  className={inputCls}
+                />
+              </div>
+            </div>
+            <div>
+              <label className={labelCls}>Technical Background</label>
               <select
-                value={inquiry.techBackground}
-                onChange={(e) =>
-                  setInquiry({ ...inquiry, techBackground: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
+                value={form.techBackground}
+                onChange={handleChange('techBackground')}
+                className={inputCls}
               >
                 <option value="">Select background</option>
                 <option value="tech">Tech</option>
-                <option value="non-tech">Non Tech</option>
+                <option value="non-tech">Non-Tech</option>
               </select>
-            </section>
-
-            {/* EDUCATION */}
-            <section className="space-y-5">
-              <h3 className="text-lg font-medium text-gray-700">
-                Education Details
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="group">
-                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                    Qualification
-                  </label>
-                  <input
-                    type="text"
-                    value={inquiry.qualification}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, qualification: e.target.value })
-                    }
-                    placeholder="e.g. BSc, BTech"
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                  />
-                </div>
-                <div className="group">
-                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                    Specialization
-                  </label>
-                  <input
-                    type="text"
-                    value={inquiry.specialization}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, specialization: e.target.value })
-                    }
-                    placeholder="e.g. Computer Science"
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                  />
-                </div>
-                <div className="group">
-                  <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                    Passing Year
-                  </label>
-                  <input
-                    type="number"
-                    value={inquiry.passingYear}
-                    onChange={(e) =>
-                      setInquiry({ ...inquiry, passingYear: e.target.value })
-                    }
-                    placeholder="2024"
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                  />
-                </div>
-              </div>
-            </section>
-
-            {/* INTERESTED AREA */}
-            <section className="space-y-5">
-              <h3 className="text-lg font-medium text-gray-700">
-                Interest
-              </h3>
-              <div className="group">
-                <label className="block text-sm font-medium text-gray-700 group-hover:text-black">
-                  Interested Area
-                </label>
-                <input
-                  type="text"
-                  value={inquiry.interestedArea}
-                  onChange={(e) =>
-                    setInquiry({ ...inquiry, interestedArea: e.target.value })
-                  }
-                  placeholder="Web Development, Data Science, etc."
-                  className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black hover:border-gray-400"
-                />
-              </div>
-            </section>
-
-            {/* SUBMIT */}
-            <div className="pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-11 text-base border border-gray-300 rounded-md text-white font-medium bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] transition disabled:opacity-50"
-              >
-                {loading
-                  ? "Saving..."
-                  : isEdit
-                    ? "Update Inquiry"
-                    : "Submit Inquiry"}
-              </button>
             </div>
-          </form>
-        </div>
+          </Section>
+
+          {/* ── Course Interest ── */}
+          <Section title="Course Interest">
+            <div>
+              <label className={labelCls}>Interested Area</label>
+              <input
+                type="text"
+                value={form.interestedArea}
+                onChange={handleChange('interestedArea')}
+                placeholder="e.g. Web Development, Data Science, AI/ML"
+                className={inputCls}
+              />
+            </div>
+          </Section>
+
+          {/* ── Actions ── */}
+          <div className="flex gap-3 pt-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 py-2.5 bg-slate-800 text-white rounded-lg text-sm font-semibold hover:bg-slate-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading
+                ? 'Saving...'
+                : isEdit
+                ? 'Update Inquiry'
+                : 'Create Inquiry'}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/inquiry')}
+              className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

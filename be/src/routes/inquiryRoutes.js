@@ -1,103 +1,85 @@
 const express = require('express');
 const router = express.Router();
-const { getInquiries, getInquiry, createInquiry, updateInquiry, deleteInquiry } = require('../controllers/inquiryController');
+const {
+  getInquiries, getInquiry, createInquiry, publicCreateInquiry,
+  updateInquiry, deleteInquiry, assignInquiry, addNote, convertToStudent,
+} = require('../controllers/inquiryController');
+const { convertInquiryToAdmission } = require('../controllers/admissionController');
+const { uploadAdmission } = require('../middleware/upload');
+
+const admissionUpload = uploadAdmission.fields([
+  { name: 'photo',     maxCount: 1 },
+  { name: 'idProof',   maxCount: 1 },
+  { name: 'marksheet', maxCount: 1 },
+]);
 const { protect } = require('../middleware/auth');
 const { authorize } = require('../middleware/roleCheck');
 const { validate } = require('../middleware/validate');
 const { createInquiryRules, updateInquiryRules } = require('../validators/inquiryValidator');
+const { logActivity } = require('../middleware/activityLogger');
 
+// Public route — no auth required (QR code / website form)
+router.post('/public', validate(createInquiryRules), publicCreateInquiry);
+
+// All routes below require authentication
 router.use(protect);
 
-/**
- * @swagger
- * /inquiries:
- *   get:
- *     summary: Get all inquiries
- *     tags: [Inquiries]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: page
- *         schema: { type: integer }
- *       - in: query
- *         name: limit
- *         schema: { type: integer }
- *     responses:
- *       200:
- *         description: List of inquiries
- *   post:
- *     summary: Create a new inquiry
- *     tags: [Inquiries]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Inquiry'
- *     responses:
- *       201:
- *         description: Inquiry created
- */
 router
   .route('/')
-  .get(authorize('admin', 'head', 'staff'), getInquiries)
-  .post(authorize('admin', 'head', 'staff'), validate(createInquiryRules), createInquiry);
+  .get(authorize('admin', 'counselor', 'receptionist'), getInquiries)
+  .post(
+    authorize('admin', 'counselor', 'receptionist'),
+    validate(createInquiryRules),
+    logActivity('CREATE', 'Inquiry', 'Created a new inquiry'),
+    createInquiry
+  );
 
-/**
- * @swagger
- * /inquiries/{id}:
- *   get:
- *     summary: Get inquiry by ID
- *     tags: [Inquiries]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema: { type: string }
- *     responses:
- *       200:
- *         description: Inquiry data
- *   put:
- *     summary: Update inquiry
- *     tags: [Inquiries]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema: { type: string }
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Inquiry'
- *     responses:
- *       200:
- *         description: Inquiry updated
- *   delete:
- *     summary: Delete inquiry
- *     tags: [Inquiries]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema: { type: string }
- *     responses:
- *       200:
- *         description: Inquiry deleted
- */
 router
   .route('/:id')
-  .get(authorize('admin', 'head', 'staff'), getInquiry)
-  .put(authorize('admin', 'head', 'staff'), validate(updateInquiryRules), updateInquiry)
-  .delete(authorize('admin', 'head'), deleteInquiry);
+  .get(authorize('admin', 'counselor', 'receptionist'), getInquiry)
+  .put(
+    authorize('admin', 'counselor', 'receptionist'),
+    validate(updateInquiryRules),
+    logActivity('UPDATE', 'Inquiry', 'Updated an inquiry'),
+    updateInquiry
+  )
+  .delete(
+    authorize('admin', 'counselor'),
+    logActivity('DELETE', 'Inquiry', 'Deleted an inquiry'),
+    deleteInquiry
+  );
+
+// Assign inquiry to counselor (Admin / Receptionist)
+router.put(
+  '/:id/assign',
+  authorize('admin', 'receptionist'),
+  logActivity('ASSIGN', 'Inquiry', 'Assigned inquiry to counselor'),
+  assignInquiry
+);
+
+// Add note to inquiry
+router.post(
+  '/:id/notes',
+  authorize('admin', 'counselor', 'receptionist'),
+  logActivity('NOTE', 'Inquiry', 'Added note to inquiry'),
+  addNote
+);
+
+// Convert inquiry to student (Counselor / Admin)
+router.post(
+  '/:id/convert',
+  authorize('admin', 'counselor'),
+  logActivity('CONVERT', 'Inquiry', 'Converted inquiry to student'),
+  convertToStudent
+);
+
+// Convert inquiry to admission (Counselor / Admin)
+router.post(
+  '/:id/convert-admission',
+  authorize('admin', 'counselor'),
+  admissionUpload,
+  logActivity('CONVERT', 'Inquiry', 'Converted inquiry to admission'),
+  convertInquiryToAdmission
+);
 
 module.exports = router;

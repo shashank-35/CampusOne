@@ -1,6 +1,6 @@
 {
   "name": "campusone-backend",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "CampusOne Backend API - Node.js + MongoDB",
   "main": "server.js",
   "scripts": {
@@ -23,6 +23,9 @@
     "mongoose": "^9.2.1",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
+    "nodemailer": "^7.0.3",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },

@@ -13,6 +13,9 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const res = await authService.login({ email, password });
     const { user: userData, token } = res.data.data;
+    if (userData.role === 'student') {
+      throw new Error('This login is for staff only. Please use the Student Portal.');
+    }
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);

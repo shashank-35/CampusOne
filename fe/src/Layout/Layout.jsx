@@ -1,21 +1,18 @@
-import React from "react";
-import { Outlet } from "react-router";
-import Sidebar from "./Sidebar";
-import TopNav from "./TopNav";
+import { Outlet } from 'react-router';
+import Sidebar from './Sidebar';
+import TopNav from './TopNav';
 
-export default function Layout({ children }) {
+export default function Layout() {
   return (
-    <div className="flex flex-1">
-      <div className="min-h-screen bg-red-500 ">
+    <div className="flex h-screen overflow-hidden bg-gray-50">
+      <div className="w-64 flex-shrink-0 overflow-y-auto">
         <Sidebar />
       </div>
-      <div className="flex-1">
-        <div className="max-h-[90px] p-2.5">
-          <TopNav />
-        </div>
-        <div className="h-[calc(100vh-90px)] bg-gray-500 overflow-y-auto">
-          {children || <Outlet />}
-        </div>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <TopNav />
+        <main className="flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
       </div>
     </div>
   );

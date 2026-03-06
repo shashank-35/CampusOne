@@ -1,249 +1,166 @@
-import React, { useState } from "react";
-import {
-  Search, Plus, Download, Trash2, Edit, Eye,
-} from "lucide-react";
-import { Link, useNavigate } from "react-router";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose,
-} from "@/components/ui/dialog";
-import axios from "axios";
+import { useState, useEffect } from 'react';
+import { Search, Plus, Trash2, Edit, Eye } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import toast from 'react-hot-toast';
+import api from '@/services/api';
 
-const API = "http://localhost:5000/api";
-const StatusBadge = ({ status }) => {
-  const styles = {
-    active: "bg-green-100 text-green-700",
-    inactive: "bg-red-100 text-red-700",
-  };
-  return (
-    <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${styles[status] || "bg-gray-100 text-gray-700"}`}>
-      {status}
-    </span>
-  );
-};
-
-const RoleBadge = ({ role }) => {
-  const styles = {
-    student: "bg-blue-100 text-blue-700",
-    staff: "bg-purple-100 text-purple-700",
-    head: "bg-orange-100 text-orange-700",
-    admin: "bg-red-100 text-red-700",
-  };
-  return (
-    <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${styles[role] || "bg-gray-100 text-gray-700"}`}>
-      {role}
-    </span>
-  );
+const ROLE_STYLES = {
+  admin: 'bg-red-100 text-red-700',
+  counselor: 'bg-purple-100 text-purple-700',
+  receptionist: 'bg-blue-100 text-blue-700',
 };
 
 export default function UserList() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedUserDetails, setSelectedUserDetails] = useState(null);
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [viewUser, setViewUser] = useState(null);
 
-  // TODO: Add fetchUsers function with API call
   const fetchUsers = async () => {
     setLoading(true);
-    const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
-    axios.get(`${API}/users`, { params: { search: searchTerm }, headers })
-      .then((res) => setUsers(res.data.data || []))
-      .catch(() => setUsers([]))
-      .finally(() => setLoading(false));
-      
-  };
-
-  // TODO: Add useEffect to fetch on mount
-  React.useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const toggleSelectAll = () => {
-    if (selectedUsers.length === users.length) {
-      setSelectedUsers([]);
-    } else {
-      setSelectedUsers(users.map((u) => u._id));
+    try {
+      const res = await api.get('/users', { params: { search, role: roleFilter, limit: 100 } });
+      setUsers(res.data.data || []);
+    } catch {
+      setUsers([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const toggleSelectUser = (id) => {
-    setSelectedUsers((prev) =>
-      prev.includes(id) ? prev.filter((uid) => uid !== id) : [...prev, id]
-    );
-  };
+  useEffect(() => { fetchUsers(); }, [search, roleFilter]);
 
   const handleDelete = async (id, name) => {
     if (!confirm(`Delete ${name}?`)) return;
-    // TODO: Add API delete call
     try {
-      await axios.delete(`${API}/users/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      await api.delete(`/users/${id}`);
+      toast.success('User deleted');
       fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Delete failed');
     }
-    catch {}
   };
-
-  const filteredUsers = users.filter((user) =>
-    `${user.firstName} ${user.lastName} ${user.email}`.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-  const paginatedUsers = filteredUsers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-          <p className="text-sm text-gray-500">Manage users, faculty, students, and administrators.</p>
+          <p className="text-sm text-gray-500">Manage staff accounts and roles.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" className="hidden sm:flex bg-white hover:bg-gray-50">
-            <Download className="mr-2 h-4 w-4" /> Export
+        <Link to="/user/create">
+          <Button className="bg-slate-800 hover:bg-slate-700 text-white">
+            <Plus className="mr-2 h-4 w-4" /> Add User
           </Button>
-          <Link to="/user/create">
-            <Button className="bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] text-white">
-              <Plus className="mr-2 h-4 w-4" /> Add User
-            </Button>
-          </Link>
+        </Link>
+      </div>
+
+      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+          <Input placeholder="Search by name or email..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
+        </div>
+        <select
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-800"
+        >
+          <option value="">All Roles</option>
+          <option value="admin">Admin</option>
+          <option value="counselor">Counselor</option>
+          <option value="receptionist">Receptionist</option>
+        </select>
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
+            <tr>
+              <th className="p-4 text-left">NAME</th>
+              <th className="p-4 text-left">EMAIL</th>
+              <th className="p-4 text-left">MOBILE</th>
+              <th className="p-4 text-left">ROLE</th>
+              <th className="p-4 text-left">STATUS</th>
+              <th className="p-4 text-right">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {loading ? (
+              <tr><td colSpan="6" className="p-8 text-center text-gray-400">Loading...</td></tr>
+            ) : users.length === 0 ? (
+              <tr><td colSpan="6" className="p-8 text-center text-gray-400">No users found.</td></tr>
+            ) : (
+              users.map((u) => (
+                <tr key={u._id} className="hover:bg-gray-50">
+                  <td className="p-4 font-medium text-gray-900">{u.firstName} {u.lastName}</td>
+                  <td className="p-4 text-gray-600">{u.email}</td>
+                  <td className="p-4 text-gray-600">{u.mobileNumber || '—'}</td>
+                  <td className="p-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${ROLE_STYLES[u.role] || 'bg-gray-100 text-gray-700'}`}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${u.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {u.status}
+                    </span>
+                  </td>
+                  <td className="p-4 text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-blue-600" onClick={() => setViewUser(u)}><Eye className="h-3.5 w-3.5" /></Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-green-600" onClick={() => navigate(`/user/edit/${u._id}`)}><Edit className="h-3.5 w-3.5" /></Button>
+                      {u.role !== 'admin' && (
+                        <Button variant="ghost" size="icon" className="h-7 w-7 hover:text-red-600" onClick={() => handleDelete(u._id, `${u.firstName} ${u.lastName}`)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+        <div className="p-4 border-t border-gray-200 bg-gray-50 text-sm text-gray-500">
+          {users.length} user{users.length !== 1 ? 's' : ''} total
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Search User..."
-            className="pl-9 bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <Select value={itemsPerPage.toString()} onValueChange={(val) => { setItemsPerPage(Number(val)); setCurrentPage(1); }}>
-            <SelectTrigger className="w-[80px] bg-white border-gray-200">
-              <SelectValue placeholder="10" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
-              <tr>
-                <th className="p-4 w-10">
-                  <Checkbox checked={selectedUsers.length === paginatedUsers.length && paginatedUsers.length > 0} onCheckedChange={toggleSelectAll} />
-                </th>
-                <th className="p-4">NAME</th>
-                <th className="p-4">EMAIL</th>
-                <th className="p-4">PHONE</th>
-                <th className="p-4">ROLE</th>
-                <th className="p-4">STATUS</th>
-                <th className="p-4 text-right">ACTION</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {loading ? (
-                <tr><td colSpan="7" className="p-8 text-center text-gray-500">Loading...</td></tr>
-              ) : paginatedUsers.length === 0 ? (
-                <tr><td colSpan="7" className="p-8 text-center text-gray-500">No users found.</td></tr>
-              ) : (
-                paginatedUsers.map((user) => (
-                  <tr key={user._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="p-4">
-                      <Checkbox checked={selectedUsers.includes(user._id)} onCheckedChange={() => toggleSelectUser(user._id)} />
-                    </td>
-                    <td className="p-4 font-medium text-gray-900">{user.firstName} {user.lastName}</td>
-                    <td className="p-4 text-gray-600">{user.email}</td>
-                    <td className="p-4 text-gray-600">{user.mobileNumber}</td>
-                    <td className="p-4"><RoleBadge role={user.role} /></td>
-                    <td className="p-4"><StatusBadge status={user.status} /></td>
-                    <td className="p-4 text-right">
-                      <div className="flex justify-end items-center gap-2">
-                        <button onClick={() => { setSelectedUserDetails(user); setIsDialogOpen(true); }} className="p-1.5 hover:bg-blue-50 rounded text-blue-600 transition-colors"><Eye className="h-4 w-4" /></button>
-                        <button onClick={() => navigate(`/user/edit/${user._id}`)} className="p-1.5 hover:bg-yellow-50 rounded text-yellow-600 transition-colors"><Edit className="h-4 w-4" /></button>
-                        <button onClick={() => handleDelete(user._id, `${user.firstName} ${user.lastName}`)} className="p-1.5 hover:bg-red-50 rounded text-red-600 transition-colors"><Trash2 className="h-4 w-4" /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">
-          Showing {filteredUsers.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}-
-          {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users
-        </p>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} className="bg-white hover:bg-gray-50">Previous</Button>
-          <span className="text-sm text-gray-600">Page {currentPage} of {totalPages || 1}</span>
-          <Button variant="outline" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(currentPage + 1)} className="bg-white hover:bg-gray-50">Next</Button>
-        </div>
-      </div>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>User Details</DialogTitle>
-          </DialogHeader>
-          {selectedUserDetails && (
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-xl font-bold text-blue-700">
-                    {selectedUserDetails.firstName?.[0]}{selectedUserDetails.lastName?.[0]}
-                  </span>
+      <Dialog open={!!viewUser} onOpenChange={() => setViewUser(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>User Details</DialogTitle></DialogHeader>
+          {viewUser && (
+            <div className="space-y-4 text-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center text-slate-700 font-bold text-lg">
+                  {viewUser.firstName?.[0]}{viewUser.lastName?.[0]}
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold">{selectedUserDetails.firstName} {selectedUserDetails.lastName}</h3>
-                  <p className="text-sm text-gray-500">{selectedUserDetails.email}</p>
-                </div>
-                <DialogClose className="ml-auto" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs font-semibold text-gray-400">PHONE</p>
-                  <p className="text-sm font-medium">{selectedUserDetails.mobileNumber}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-gray-400">ROLE</p>
-                  <RoleBadge role={selectedUserDetails.role} />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-gray-400">STATUS</p>
-                  <StatusBadge status={selectedUserDetails.status} />
+                  <p className="font-semibold text-gray-900">{viewUser.firstName} {viewUser.lastName}</p>
+                  <p className="text-gray-500 text-xs">{viewUser.email}</p>
                 </div>
               </div>
-              <div className="flex gap-3 pt-4">
-                <Button onClick={() => { navigate(`/user/edit/${selectedUserDetails._id}`); setIsDialogOpen(false); }} className="flex-1 bg-[var(--theme-button-color)] hover:bg-[var(--theme-background-color)] text-white">
-                  <Edit className="h-4 w-4 mr-2" /> Edit
+              <div className="grid grid-cols-2 gap-3 py-3 border-y border-gray-100">
+                {[
+                  ['Mobile', viewUser.mobileNumber || '—'],
+                  ['Role', viewUser.role],
+                  ['Status', viewUser.status],
+                  ['City', viewUser.city || '—'],
+                ].map(([k, v]) => (
+                  <div key={k}>
+                    <p className="text-xs text-gray-400 uppercase font-medium">{k}</p>
+                    <p className="text-gray-800 capitalize">{v}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Button className="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs" onClick={() => { setViewUser(null); navigate(`/user/edit/${viewUser._id}`); }}>
+                  <Edit className="h-3 w-3 mr-1" /> Edit
                 </Button>
-                <Button onClick={() => setIsDialogOpen(false)} variant="outline" className="flex-1">Close</Button>
+                <Button variant="outline" className="flex-1 text-xs" onClick={() => setViewUser(null)}>Close</Button>
               </div>
             </div>
           )}

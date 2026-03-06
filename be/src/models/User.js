@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: [true, 'First name is required'], trim: true },
-    lastName: { type: String, required: [true, 'Last name is required'], trim: true },
+    lastName:  { type: String, required: [true, 'Last name is required'],  trim: true },
     email: {
       type: String,
       required: [true, 'Email is required'],
@@ -19,24 +19,27 @@ const userSchema = new mongoose.Schema(
       minlength: [6, 'Password must be at least 6 characters'],
       select: false,
     },
-    dateOfBirth: { type: Date },
-    gender: { type: String, enum: ['male', 'female', 'other'] },
-    mobileNumber: { type: String, trim: true },
-    addressLine1: { type: String, trim: true },
-    addressLine2: { type: String, trim: true },
-    city: { type: String, trim: true },
-    state: { type: String, trim: true },
-    pincode: { type: String, trim: true, maxlength: 6 },
     role: {
       type: String,
-      enum: ['admin', 'head', 'staff', 'student'],
-      default: 'student',
+      // Only ONE admin is allowed — enforced at the controller level
+      enum: ['admin', 'counselor', 'receptionist', 'student'],
+      default: 'receptionist',
     },
     status: {
       type: String,
       enum: ['active', 'inactive'],
       default: 'active',
     },
+    // Profile fields
+    dateOfBirth:  { type: Date },
+    gender:       { type: String, enum: ['male', 'female', 'other'] },
+    mobileNumber: { type: String, trim: true },
+    addressLine1: { type: String, trim: true },
+    addressLine2: { type: String, trim: true },
+    city:         { type: String, trim: true },
+    state:        { type: String, trim: true },
+    pincode:      { type: String, trim: true, maxlength: 6 },
+    profileImage: { type: String, default: null },
   },
   { timestamps: true }
 );

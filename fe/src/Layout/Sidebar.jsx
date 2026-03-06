@@ -1,34 +1,95 @@
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
+import { useAuth } from '@/context/AuthContext';
+import {
+  LayoutDashboard, Users, GraduationCap, MessageSquare, BookOpen,
+  Calendar, Package, UserCircle, Activity, QrCode, LogOut, ClipboardList, CreditCard,
+} from 'lucide-react';
+
+const NAV = {
+  admin: [
+    { label: 'Dashboard',   to: '/dashboard',    icon: LayoutDashboard },
+    { label: 'Inquiries',   to: '/inquiry',      icon: MessageSquare },
+    { label: 'Admissions',  to: '/admission',    icon: ClipboardList },
+    { label: 'Payments',    to: '/payment',      icon: CreditCard },
+    { label: 'Students',    to: '/student',      icon: GraduationCap },
+    { label: 'Courses',     to: '/course',       icon: BookOpen },
+    { label: 'Events',      to: '/event',        icon: Calendar },
+    { label: 'Products',    to: '/product',      icon: Package },
+    { label: 'Users',       to: '/user',         icon: Users },
+    { label: 'QR Code',     to: '/qr-code',      icon: QrCode },
+    { label: 'Activity Log',to: '/activity-log', icon: Activity },
+    { label: 'My Profile',  to: '/profile',      icon: UserCircle },
+  ],
+  counselor: [
+    { label: 'Dashboard',   to: '/dashboard',    icon: LayoutDashboard },
+    { label: 'Inquiries',   to: '/inquiry',      icon: MessageSquare },
+    { label: 'Admissions',  to: '/admission',    icon: ClipboardList },
+    { label: 'Payments',    to: '/payment',      icon: CreditCard },
+    { label: 'My Profile',  to: '/profile',      icon: UserCircle },
+  ],
+  receptionist: [
+    { label: 'Dashboard',   to: '/dashboard',    icon: LayoutDashboard },
+    { label: 'Inquiries',   to: '/inquiry',      icon: MessageSquare },
+    { label: 'Admissions',  to: '/admission',    icon: ClipboardList },
+    { label: 'Payments',    to: '/payment',      icon: CreditCard },
+    { label: 'Students',    to: '/student',      icon: GraduationCap },
+    { label: 'My Profile',  to: '/profile',      icon: UserCircle },
+  ],
+};
 
 export default function Sidebar() {
-  const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
+  const navigate   = useNavigate();
+  const location   = useLocation();
+  const { user, logout: authLogout } = useAuth();
+
+  const links = NAV[user?.role] || NAV.receptionist;
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    authLogout();
+    navigate('/');
   };
 
+  const isActive = (to) =>
+    to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(to);
+
   return (
-    <aside className="bg-(--theme-background-color) text-(--theme-foreground-color) w-64 h-full p-6 flex flex-col">
-      <h1 className="text-2xl font-bold mb-4">OmniHub</h1>
-      <nav className="flex flex-col space-y-2 flex-1">
-        <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/">Home</Link>
-        <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/student">Student</Link>
-        <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/inquiry">Inquiry</Link>
-        <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/course">Course</Link>
-        <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/event">Event</Link>
-        <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/user">User</Link>
-        <Link className="block px-2 py-1 rounded hover:bg-gray-700" to="/product">Product</Link>
+    <aside className="bg-slate-900 text-white w-64 h-full flex flex-col">
+      {/* Brand */}
+      <div className="px-6 py-5 border-b border-slate-700">
+        <h1 className="text-xl font-bold tracking-tight">OmniHub</h1>
+        <p className="text-slate-400 text-xs mt-0.5">Campus Management System</p>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        {links.map(({ label, to, icon: Icon }) => (
+          <Link
+            key={to}
+            to={to}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              isActive(to)
+                ? 'bg-slate-700 text-white'
+                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+            }`}
+          >
+            <Icon className="h-4 w-4 flex-shrink-0" />
+            {label}
+          </Link>
+        ))}
       </nav>
+
+      {/* User + Logout */}
       {user && (
-        <div className="mt-auto pt-4 border-t border-gray-600">
-          <p className="text-sm text-gray-400 mb-2">{user.firstName} {user.lastName}</p>
+        <div className="px-3 py-4 border-t border-slate-700 space-y-2">
+          <div className="px-3 py-2">
+            <p className="text-sm font-medium text-white">{user.firstName} {user.lastName}</p>
+            <p className="text-xs text-slate-400 capitalize">{user.role}</p>
+          </div>
           <button
             onClick={logout}
-            className="w-full text-left px-2 py-1 rounded hover:bg-gray-700 text-red-400 text-sm"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-red-800/40 hover:text-red-300 transition-colors"
           >
+            <LogOut className="h-4 w-4" />
             Logout
           </button>
         </div>
