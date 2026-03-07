@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { LifeBuoy, MessageCircle, HelpCircle, ChevronDown, ChevronUp, Send } from 'lucide-react';
+import { LifeBuoy, MessageCircle, HelpCircle, ChevronDown, ChevronUp, Send, Ticket, Clock } from 'lucide-react';
+import studentApi from '@/services/studentApi';
 
 const FAQ = [
   {
@@ -26,6 +27,21 @@ const FAQ = [
   },
 ];
 
+const STATUS_STYLES = {
+  open:          'bg-blue-100 text-blue-700',
+  'in-progress': 'bg-orange-100 text-orange-700',
+  resolved:      'bg-green-100 text-green-700',
+  closed:        'bg-gray-100 text-gray-600',
+};
+
+const CATEGORY_LABELS = {
+  admission: 'Admission',
+  fees:      'Fees & Payment',
+  course:    'Course Info',
+  technical: 'Technical',
+  other:     'Other',
+};
+
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
@@ -35,11 +51,9 @@ function FaqItem({ q, a }) {
         className="w-full flex items-center justify-between px-5 py-4 text-left bg-white hover:bg-gray-50 transition-colors"
       >
         <span className="text-sm font-medium text-gray-900">{q}</span>
-        {open ? (
-          <ChevronUp className="h-4 w-4 text-indigo-500 flex-shrink-0" />
-        ) : (
-          <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />
-        )}
+        {open
+          ? <ChevronUp className="h-4 w-4 text-indigo-500 flex-shrink-0" />
+          : <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />}
       </button>
       {open && (
         <div className="px-5 pb-4 bg-white">
@@ -54,19 +68,36 @@ const inputCls = 'w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm f
 const labelCls = 'block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5';
 
 export default function Support() {
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [sending, setSending]   = useState(false);
+  const [sent, setSent]         = useState(false);
+  const [myTickets, setMyTickets] = useState([]);
+  const [ticketsLoading, setTicketsLoading] = useState(true);
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+  const fetchMyTickets = () => {
+    studentApi.get('/student-portal/tickets')
+      .then((res) => setMyTickets(res.data.data || []))
+      .catch(() => {})
+      .finally(() => setTicketsLoading(false));
+  };
+
+  useEffect(() => { fetchMyTickets(); }, []);
 
   const onSubmit = async (data) => {
     setSending(true);
-    // Simulate submit — in production, hook to an API
-    await new Promise((res) => setTimeout(res, 1200));
-    setSending(false);
-    setSent(true);
-    reset();
-    toast.success('Support ticket submitted! We will get back to you shortly.');
-    setTimeout(() => setSent(false), 4000);
+    try {
+      await studentApi.post('/tickets', data);
+      toast.success('Ticket submitted! We will get back to you shortly.');
+      reset();
+      setSent(true);
+      fetchMyTickets();
+      setTimeout(() => setSent(false), 3000);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit ticket');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -166,6 +197,72 @@ export default function Support() {
             </ul>
           </div>
         </div>
+      </div>
+
+      {/* My Tickets */}
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Ticket className="h-4 w-4 text-indigo-600" />
+          My Tickets
+          {myTickets.length > 0 && (
+            <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded-full font-semibold">
+              {myTickets.length}
+            </span>
+          )}
+        </h3>
+
+        {ticketsLoading ? (
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-16 bg-white rounded-xl border border-gray-100 animate-pulse" />
+            ))}
+          </div>
+        ) : myTickets.length === 0 ? (
+          <div className="py-10 text-center bg-white rounded-xl border border-gray-100">
+            <Ticket className="h-8 w-8 text-gray-200 mx-auto mb-2" />
+            <p className="text-sm text-gray-400">No tickets submitted yet</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {myTickets.map((t) => (
+              <div key={t._id} className="bg-white rounded-xl border border-gray-100 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[t.status]}`}>
+                        {t.status}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                        {CATEGORY_LABELS[t.category] || t.category}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-900">{t.subject}</p>
+                    <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {new Date(t.createdAt).toLocaleDateString('en-IN', {
+                        day: 'numeric', month: 'short', year: 'numeric',
+                      })}
+                      {t.assignedTo && (
+                        <span className="ml-2">· Assigned to {t.assignedTo.firstName} {t.assignedTo.lastName}</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                {t.reply && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <p className="text-xs font-semibold text-gray-500 mb-1">
+                      Reply from {t.repliedBy?.firstName} {t.repliedBy?.lastName}
+                    </p>
+                    <p className="text-sm text-gray-700 bg-indigo-50 rounded-lg px-3 py-2 leading-relaxed">
+                      {t.reply}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* FAQ */}

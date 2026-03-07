@@ -67,7 +67,7 @@ export default function Notifications() {
 
   const fetch = () => {
     studentApi.get('/notifications')
-      .then((res) => setNotifications(res.data.data || []))
+      .then((res) => setNotifications(res.data.data?.notifications || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   };
@@ -76,7 +76,7 @@ export default function Notifications() {
 
   const handleRead = async (id) => {
     try {
-      await studentApi.put(`/notifications/${id}`);
+      await studentApi.put(`/notifications/${id}/read`);
       setNotifications((prev) => prev.map((n) => n._id === id ? { ...n, read: true } : n));
     } catch {
       toast.error('Failed to mark as read');
@@ -94,8 +94,7 @@ export default function Notifications() {
   };
 
   const markAllRead = async () => {
-    const unread = notifications.filter((n) => !n.read);
-    await Promise.allSettled(unread.map((n) => studentApi.put(`/notifications/${n._id}`)));
+    await studentApi.put('/notifications/read-all');
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     toast.success('All marked as read');
   };

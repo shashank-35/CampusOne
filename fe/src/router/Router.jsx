@@ -33,6 +33,7 @@ import Profile from '@/pages/Profile';
 import QRCodePage from '@/pages/QRCodePage';
 import ActivityLog from '@/pages/ActivityLog';
 import AdmissionList from '@/pages/AdmissionList';
+import TicketList from '@/pages/TicketList';
 import AdmissionForm from '@/pages/AdmissionForm';
 import AdmissionDetail from '@/pages/AdmissionDetail';
 import PaymentList from '@/pages/PaymentList';
@@ -113,6 +114,7 @@ export default function Router() {
           <Route path="/profile"           element={<Profile />} />
           <Route path="/qr-code"           element={<QRCodePage />} />
           <Route path="/activity-log"      element={<ActivityLog />} />
+          <Route path="/tickets"           element={<TicketList />} />
 
           <Route path="*" element={<NotFound />} />
         </Route>

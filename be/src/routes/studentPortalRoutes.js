@@ -11,6 +11,7 @@ const {
   getStudentEvents,
   getStudentInquiry,
 } = require('../controllers/studentPortalController');
+const { getMyTickets } = require('../controllers/ticketController');
 
 // All student portal routes require authentication and student role
 router.use(protect);
@@ -23,5 +24,6 @@ router.put('/password',  changeStudentPassword);
 router.get('/courses',   getStudentCourses);
 router.get('/events',    getStudentEvents);
 router.get('/inquiry',   getStudentInquiry);
+router.get('/tickets',   getMyTickets);
 
 module.exports = router;

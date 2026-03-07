@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from 'react-router';
 import { useAuth } from '@/context/AuthContext';
 import {
   LayoutDashboard, Users, GraduationCap, MessageSquare, BookOpen,
-  Calendar, Package, UserCircle, Activity, QrCode, LogOut, ClipboardList, CreditCard,
+  Calendar, Package, UserCircle, Activity, QrCode, LogOut, ClipboardList, CreditCard, Ticket,
 } from 'lucide-react';
 
 const NAV = {
@@ -12,6 +12,7 @@ const NAV = {
     { label: 'Admissions',  to: '/admission',    icon: ClipboardList },
     { label: 'Payments',    to: '/payment',      icon: CreditCard },
     { label: 'Students',    to: '/student',      icon: GraduationCap },
+    { label: 'Tickets',     to: '/tickets',      icon: Ticket },
     { label: 'Courses',     to: '/course',       icon: BookOpen },
     { label: 'Events',      to: '/event',        icon: Calendar },
     { label: 'Products',    to: '/product',      icon: Package },
@@ -25,6 +26,7 @@ const NAV = {
     { label: 'Inquiries',   to: '/inquiry',      icon: MessageSquare },
     { label: 'Admissions',  to: '/admission',    icon: ClipboardList },
     { label: 'Payments',    to: '/payment',      icon: CreditCard },
+    { label: 'Tickets',     to: '/tickets',      icon: Ticket },
     { label: 'My Profile',  to: '/profile',      icon: UserCircle },
   ],
   receptionist: [

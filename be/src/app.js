@@ -26,6 +26,7 @@ const qrRoutes           = require('./routes/qrRoutes');
 const studentPortalRoutes = require('./routes/studentPortalRoutes');
 const admissionRoutes     = require('./routes/admissionRoutes');
 const paymentRoutes       = require('./routes/paymentRoutes');
+const ticketRoutes        = require('./routes/ticketRoutes');
 
 const app = express();
 
@@ -78,6 +79,7 @@ app.use('/api/qr',            qrRoutes);
 app.use('/api/student-portal', studentPortalRoutes);
 app.use('/api/admissions',    admissionRoutes);
 app.use('/api/payments',      paymentRoutes);
+app.use('/api/tickets',       ticketRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
