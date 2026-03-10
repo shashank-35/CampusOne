@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-productSchema.pre('save', function (next) {
+productSchema.pre('save', function () {
   if (this.availableCount <= 0) {
     this.status = 'out-of-stock';
   } else if (this.availableCount <= 10) {
@@ -24,7 +24,6 @@ productSchema.pre('save', function (next) {
   } else {
     this.status = 'in-stock';
   }
-  next();
 });
 
 module.exports = mongoose.model('Product', productSchema);
